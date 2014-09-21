@@ -1,4 +1,4 @@
-package cayl
+package fileproxy
 
 import (
 	"github.com/stretchr/testify/assert"

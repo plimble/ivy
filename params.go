@@ -1,4 +1,4 @@
-package cayl
+package fileproxy
 
 import (
 	"fmt"

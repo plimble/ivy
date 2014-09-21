@@ -1,11 +1,10 @@
-package cayl
+package fileproxy
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
 	"io"
-	"mime/multipart"
 )
 
 const (
@@ -68,7 +67,7 @@ func (p *Proxy) getStorage(storage string) Storage {
 	}
 }
 
-func (p *Proxy) Save(storage, filename string, data multipart.File) (*bytes.Buffer, error) {
+func (p *Proxy) Save(storage, filename string, data io.Reader) (*bytes.Buffer, error) {
 	s := p.getStorage(storage)
 
 	buffer := bytes.NewBuffer(nil)
@@ -96,6 +95,7 @@ func (p *Proxy) Load(storage, paramsStr, filename, ext string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	sp := sourcePath(filename)
 	cp := cachePath(params, filename, ext)
 

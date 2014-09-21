@@ -11,7 +11,9 @@ import (
 	"runtime"
 )
 
-func upload(services *services, c *gin.Context) {
+var proxy *fileproxy.Proxy
+
+func upload(c *gin.Context) {
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
 		c.String(500, err.Error())
@@ -23,7 +25,7 @@ func upload(services *services, c *gin.Context) {
 
 	filename := path + "/" + header.Filename
 
-	_, err = services.proxy.Save(storage, filename, file)
+	_, err = proxy.Save(storage, filename, file)
 	if err != nil {
 		c.String(500, err.Error())
 		return
@@ -32,14 +34,14 @@ func upload(services *services, c *gin.Context) {
 	c.String(200, "")
 }
 
-func load(services *services, c *gin.Context) {
+func load(c *gin.Context) {
 	storage := c.Params.ByName("storage")
 	path := c.Params.ByName("path")
 	paramsStr := c.Params.ByName("params")
 
 	ext := filepath.Ext(path)
 
-	data, err := services.proxy.Load(storage, paramsStr, path, ext)
+	data, err := proxy.Load(storage, paramsStr, path, ext)
 	if fileproxy.IsNotFound(err) {
 		c.String(404, err.Error())
 		return
@@ -59,11 +61,11 @@ func load(services *services, c *gin.Context) {
 	c.Writer.Write(data)
 }
 
-func remove(services *services, c *gin.Context) {
+func remove(c *gin.Context) {
 	storage := c.Params.ByName("storage")
 	path := c.Params.ByName("path")
 
-	err := services.proxy.Delete(storage, path)
+	err := proxy.Delete(storage, path)
 	if err != nil {
 		c.JSON(500, err.Error())
 		return
@@ -72,35 +74,22 @@ func remove(services *services, c *gin.Context) {
 	c.String(200, "")
 }
 
-type appHandleFunc func(services *services, c *gin.Context)
-type services struct {
-	proxy *fileproxy.Proxy
-}
-
-func appHandle(services *services, handle appHandleFunc) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		handle(services, c)
-	}
-}
-
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	//read env
-	filePath := os.Getenv("CAYL_FILE_PATH")
-	IP := os.Getenv("CAYL_IP")
+	filePath := os.Getenv("FILEPROXY_FILE_PATH")
+	IP := os.Getenv("FILEPROXY_IP")
 
-	s := &services{
-		proxy: fileproxy.New(fileproxy.Config{
-			FileStoragePath: filePath,
-		}),
-	}
+	proxy = fileproxy.New(fileproxy.Config{
+		FileStoragePath: filePath,
+	})
 
 	g := gin.New()
 	g.Use(gin.Recovery())
 
-	g.POST("/upload/:storage/*path", appHandle(s, upload))
-	g.GET("/:storage/:params/*path", appHandle(s, load))
-	g.DELETE("/:storage/*path", appHandle(s, remove))
+	g.POST("/upload/:storage/*path", upload)
+	g.GET("/:storage/:params/*path", load)
+	g.DELETE("/:storage/*path", remove)
 
 	if IP == "" {
 		IP = ":3001"

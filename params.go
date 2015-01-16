@@ -43,7 +43,7 @@ type Params struct {
 	IsDefault bool
 }
 
-func ParseParams(paramsStr string) (*Params, error) {
+func parseParams(paramsStr string) (*Params, error) {
 	params := &Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true}
 	if paramsStr == "" || paramsStr == "_" {
 		return params, nil

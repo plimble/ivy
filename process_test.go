@@ -24,7 +24,7 @@ func TestProcessResize(t *testing.T) {
 
 	png.Encode(buffer, image.NewRGBA(image.Rect(0, 0, 200, 200)))
 
-	result, err := process(params, "test.png", ".png", buffer)
+	result, err := process(params, "test.png", buffer)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, result)
 }
@@ -43,7 +43,7 @@ func TestProcessCropExact(t *testing.T) {
 
 	png.Encode(buffer, image.NewRGBA(image.Rect(0, 0, 200, 200)))
 
-	result, err := process(params, "test.png", ".png", buffer)
+	result, err := process(params, "test.png", buffer)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, result)
 }
@@ -62,7 +62,7 @@ func TestProcessCropScale(t *testing.T) {
 
 	png.Encode(buffer, image.NewRGBA(image.Rect(0, 0, 200, 200)))
 
-	result, err := process(params, "test.png", ".png", buffer)
+	result, err := process(params, "test.png", buffer)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, result)
 }
@@ -83,6 +83,6 @@ func BenchmarkResize(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		process(params, "test.png", ".png", buffer)
+		process(params, "test.png", buffer)
 	}
 }

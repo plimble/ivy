@@ -6,6 +6,7 @@ import (
 	"github.com/disintegration/gift"
 	"image"
 	"image/gif"
+	"path"
 
 	"image/jpeg"
 	"image/png"
@@ -19,7 +20,8 @@ const (
 	PNG  = ".png"
 )
 
-func process(params *Params, filePath, ext string, file io.Reader) ([]byte, error) {
+func process(params *Params, filePath string, file io.Reader) ([]byte, error) {
+	ext := path.Ext(filePath)
 	img, err := decode(ext, file)
 	if err != nil {
 		return nil, err

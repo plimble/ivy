@@ -3,162 +3,110 @@ package fileproxy
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
 )
 
-const (
-	Source = "source"
-	Cache  = "cache"
+var ErrNotFound = errors.New("not found")
 
-	File = "file"
-	S3   = "s3"
-)
-
-var (
-	NotFound = errors.New("not found")
-)
-
-func IsNotFound(err error) bool {
-	if err != NotFound {
-		return false
-	}
-
-	return true
+type Source interface {
+	Load(filename string) (io.Reader, int64, time.Time, error)
+	GetFilePath(filename string) string
 }
 
-type Storage interface {
-	Save(filename string, data []byte) error
-	Load(filename string) (io.Reader, error)
+type Cache interface {
+	Save(filename string, file []byte) error
+	Load(filename string) (io.Reader, int64, time.Time, error)
 	Delete(filename string) error
-	DeleteFolder(dir string) error
-	Exist(path string) (bool, error)
-	IsNotFound(err error) bool
+	Flush() error
+}
+
+type FileProxy struct {
+	Source Source
+	Cache  Cache
+	Config *Config
+	root   string
 }
 
 type Config struct {
-	FileStoragePath string
+	HttpCache     int64
+	IsDevelopment bool
 }
 
-type Proxy struct {
-	File Storage
-	S3   Storage
+func New(root string, source Source, cache Cache, config *Config) *FileProxy {
+	return &FileProxy{source, cache, config, root}
 }
 
-func New(config Config) *Proxy {
-
-	if config.FileStoragePath == "" {
-		config.FileStoragePath = "./"
-	}
-
-	return &Proxy{
-		File: newFileStorage(config.FileStoragePath),
-	}
-}
-
-func (p *Proxy) getStorage(storage string) Storage {
-	switch storage {
-	case File:
-		return p.File
-	case S3:
-		return p.S3
-	default:
-		return p.File
-	}
-}
-
-func (p *Proxy) Save(storage, filename string, data io.Reader) (*bytes.Buffer, error) {
-	s := p.getStorage(storage)
-
-	buffer := bytes.NewBuffer(nil)
-	buffer.ReadFrom(data)
-
-	exist, err := s.Exist(sourcePath(filename))
-	if exist {
-		return nil, fmt.Errorf("%s is already exist", filename)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	err = s.Save(sourcePath(filename), buffer.Bytes())
-	if err != nil {
-		return nil, err
-	}
-
-	return buffer, nil
-}
-
-func (p *Proxy) Load(storage, paramsStr, filename, ext string) ([]byte, error) {
-	s := p.getStorage(storage)
-	params, err := ParseParams(paramsStr)
-	if err != nil {
-		return nil, err
-	}
-
-	sp := sourcePath(filename)
-	cp := cachePath(params, filename, ext)
-
-	//load default
-	if params.IsDefault {
-		reader, err := s.Load(sp)
-		if err != nil {
-			if s.IsNotFound(err) {
-				return nil, NotFound
-			}
-			return nil, err
-		}
-		buffer := bytes.NewBuffer(nil)
-		buffer.ReadFrom(reader)
-
-		return buffer.Bytes(), nil
-	}
+func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var file io.Reader
+	var size int64
+	var modTime time.Time
+	path := strings.Replace(r.URL.Path, f.root, "", 1)
+	strList := strings.Split(path, "/")
+	filename := strList[1]
 
 	//load from cache
-	reader, err := s.Load(cp)
-	if err != nil && !s.IsNotFound(err) {
-		return nil, err
-	}
-	if err == nil {
+	if !f.Config.IsDevelopment {
+		file, size, modTime, err = f.Cache.Load(filename)
 		buffer := bytes.NewBuffer(nil)
-		buffer.ReadFrom(reader)
-
-		return buffer.Bytes(), nil
-	}
-
-	//load source for process
-	reader, err = s.Load(sp)
-	if err != nil {
-		if s.IsNotFound(err) {
-			return nil, NotFound
+		buffer.ReadFrom(file)
+		if err == nil {
+			f.writeSuccess(w, buffer.Bytes(), size, modTime)
+			return
 		}
-		return nil, err
 	}
 
-	data, err := process(params, sp, ext, reader)
-	if err != nil {
-		return nil, err
+	//load from source
+	if err == ErrNotFound {
+		file, size, modTime, err = f.Source.Load(filename)
+		if err == nil {
+			params, err := parseParams(strList[0])
+			img, err := process(params, f.Source.GetFilePath(filename), file)
+			if err != nil {
+				f.writeError(w, err)
+				return
+			}
+			f.writeSuccess(w, img, size, modTime)
+			if f.Cache != nil {
+				f.Cache.Save(filename, img)
+			}
+			return
+		}
+
+		if err == ErrNotFound {
+			f.writeNotFoud(w)
+		} else {
+			f.writeError(w, err)
+		}
+	}
+}
+
+func (f *FileProxy) writeSuccess(w http.ResponseWriter, file []byte, size int64, modTime time.Time) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", http.DetectContentType(file))
+	w.Header().Add("Connection", "keep-alive")
+	w.Header().Add("Vary", "Accept-Encoding")
+	w.Header().Add("Content-Length", strconv.FormatInt(size, 10))
+
+	if f.Config.HttpCache > 0 && !f.Config.IsDevelopment {
+		w.Header().Add("Cache-Control", "public")
+		w.Header().Add("Cache-Control", "public; max-age="+strconv.FormatInt(f.Config.HttpCache, 10))
+		w.Header().Add("Last-Modified", "Mon, _2 Jan 2006 15:04:05 MST")
 	}
 
-	go s.Save(cp, data)
-
-	return data, nil
+	w.Write(file)
 }
 
-func (p *Proxy) Delete(storage, filename string) error {
-	s := p.getStorage(storage)
-
-	if err := s.Delete(sourcePath(filename)); err != nil {
-		return err
-	}
-
-	return s.DeleteFolder(Cache + "/" + filename)
+func (f *FileProxy) writeError(w http.ResponseWriter, err error) {
+	w.WriteHeader(500)
+	w.Write([]byte(err.Error()))
 }
 
-func cachePath(params *Params, filename, ext string) string {
-	return Cache + "/" + filename + "/" + params.String() + ext
-}
-
-func sourcePath(filename string) string {
-	return Source + "/" + filename
+func (f *FileProxy) writeNotFoud(w http.ResponseWriter) {
+	w.WriteHeader(404)
+	w.Write([]byte("not found"))
 }

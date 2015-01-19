@@ -3,6 +3,7 @@ package fileproxy
 import (
 	"io"
 	"os"
+	"path"
 	"time"
 )
 
@@ -15,7 +16,7 @@ func NewFileSystemSource(root string) *FileSystemSource {
 }
 
 func (fs *FileSystemSource) Load(filename string) (io.Reader, int64, time.Time, error) {
-	filename = fs.root + "/" + filename
+	filename = path.Join(fs.root, filename)
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -30,5 +31,5 @@ func (fs *FileSystemSource) Load(filename string) (io.Reader, int64, time.Time, 
 }
 
 func (fs *FileSystemSource) GetFilePath(filename string) string {
-	return fs.root + "/" + filename
+	return path.Join(fs.root, filename)
 }

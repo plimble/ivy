@@ -68,10 +68,11 @@ func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
 	}
 
 	params, err := parseParams(paramsStr)
+	paramsStr = params.String()
 
 	//load from cache
 	if !f.Config.IsDevelopment {
-		file, size, modTime, err = f.Cache.Load(filename, params.String())
+		file, size, modTime, err = f.Cache.Load(filename, paramsStr)
 		if err == nil {
 			buffer := bytes.NewBuffer(nil)
 			buffer.ReadFrom(file)
@@ -91,7 +92,7 @@ func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
 			}
 			f.writeSuccess(w, img, size, modTime)
 			if f.Cache != nil {
-				f.Cache.Save(filename, params.String(), img)
+				f.Cache.Save(filename, paramsStr, img)
 			}
 			return
 		}

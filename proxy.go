@@ -71,7 +71,7 @@ func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
 	paramsStr = params.String()
 
 	//load from cache
-	if !f.Config.IsDevelopment {
+	if !f.Config.IsDevelopment && f.Cache != nil {
 		file, size, modTime, err = f.Cache.Load(filename, paramsStr)
 		if err == nil {
 			buffer := bytes.NewBuffer(nil)

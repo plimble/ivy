@@ -14,11 +14,15 @@ type FileSystemCache struct {
 }
 
 func NewFileSystemCache(root string) *FileSystemCache {
+	if err := os.MkdirAll(root, 0755); err != nil {
+		panic(err)
+	}
+
 	return &FileSystemCache{root}
 }
 
-func (fs *FileSystemCache) Save(filename string, data []byte) error {
-	filename = path.Join(fs.root, filename)
+func (fs *FileSystemCache) Save(filename, paramsStr string, data []byte) error {
+	filename = path.Join(fs.root, paramsStr+"_"+filename)
 	dir := filepath.Dir(filename)
 
 	_, err := os.Open(dir)
@@ -39,8 +43,8 @@ func (fs *FileSystemCache) Save(filename string, data []byte) error {
 	return err
 }
 
-func (fs *FileSystemCache) Load(filename string) (io.Reader, int64, time.Time, error) {
-	filename = path.Join(fs.root, filename)
+func (fs *FileSystemCache) Load(filename, paramsStr string) (io.Reader, int64, time.Time, error) {
+	filename = path.Join(fs.root, paramsStr+"_"+filename)
 
 	file, err := os.Open(filename)
 	if os.IsNotExist(err) {

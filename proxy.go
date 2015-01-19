@@ -18,8 +18,8 @@ type Source interface {
 }
 
 type Cache interface {
-	Save(filename string, file []byte) error
-	Load(filename string) (io.Reader, int64, time.Time, error)
+	Save(filename, paramsStr string, file []byte) error
+	Load(filename, paramsStr string) (io.Reader, int64, time.Time, error)
 	Delete(filename string) error
 	Flush() error
 }
@@ -62,11 +62,21 @@ func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	params, err := parseParams(paramsStr)
+
 	//load from cache
 	if !f.Config.IsDevelopment {
-		file, size, modTime, err = f.Cache.Load(filename)
+		file, size, modTime, err = f.Cache.Load(filename, params.String())
 
 		if err == nil {
+			if f.Config.HttpCache > 0 && !f.Config.IsDevelopment {
+				lastMod, err := time.Parse("Mon, _2 Jan 2006 15:04:05 MST", r.Header.Get("If-Modified-Since"))
+				if err == nil && lastMod.Equal(modTime) {
+					f.writeNotModify(w)
+					return
+				}
+			}
+
 			buffer := bytes.NewBuffer(nil)
 			buffer.ReadFrom(file)
 			f.writeSuccess(w, buffer.Bytes(), size, modTime)
@@ -78,16 +88,14 @@ func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
 	if err == ErrNotFound {
 		file, size, modTime, err = f.Source.Load(filename)
 		if err == nil {
-			params, err := parseParams(paramsStr)
 			img, err := process(params, f.Source.GetFilePath(filename), file)
-
 			if err != nil {
 				f.writeError(w, err)
 				return
 			}
 			f.writeSuccess(w, img, size, modTime)
 			if f.Cache != nil {
-				f.Cache.Save(filename, img)
+				f.Cache.Save(filename, params.String(), img)
 			}
 			return
 		}
@@ -105,17 +113,19 @@ func (f *FileProxy) FlushCache() error {
 }
 
 func (f *FileProxy) writeSuccess(w http.ResponseWriter, file []byte, size int64, modTime time.Time) {
-	w.WriteHeader(http.StatusOK)
 	w.Header().Add("Content-Type", http.DetectContentType(file))
 	w.Header().Add("Connection", "keep-alive")
 	w.Header().Add("Vary", "Accept-Encoding")
 	w.Header().Add("Content-Length", strconv.FormatInt(size, 10))
 
 	if f.Config.HttpCache > 0 && !f.Config.IsDevelopment {
+
 		w.Header().Add("Cache-Control", "public; max-age="+strconv.FormatInt(f.Config.HttpCache, 10))
 		w.Header().Add("Last-Modified", modTime.Format("Mon, _2 Jan 2006 15:04:05 MST"))
+		w.Header().Add("Expires", modTime.Add(time.Second*time.Duration(f.Config.HttpCache)).Format("Mon, _2 Jan 2006 15:04:05 MST"))
 	}
 
+	w.WriteHeader(http.StatusOK)
 	w.Write(file)
 }
 
@@ -127,4 +137,9 @@ func (f *FileProxy) writeError(w http.ResponseWriter, err error) {
 func (f *FileProxy) writeNotFoud(w http.ResponseWriter) {
 	w.WriteHeader(404)
 	w.Write([]byte("not found"))
+}
+
+func (f *FileProxy) writeNotModify(w http.ResponseWriter) {
+	w.WriteHeader(304)
+	w.Write(nil)
 }

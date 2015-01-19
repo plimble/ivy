@@ -9,7 +9,9 @@ import (
 
 func TestLoadSource(t *testing.T) {
 	fs := NewFileSystemSource("testsource")
+	defer os.RemoveAll(fs.root)
 	fileName := "test.txt"
+	os.Mkdir(fs.root, 0755)
 	err := ioutil.WriteFile(fs.root+"/"+fileName, []byte("TESTSOURCE"), 0755)
 	assert.NoError(t, err)
 
@@ -17,7 +19,6 @@ func TestLoadSource(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, fsize)
 	assert.False(t, ftime.IsZero())
-	defer os.Remove(fs.root + "/" + fileName)
 }
 
 func TestLoadSourceNotExist(t *testing.T) {

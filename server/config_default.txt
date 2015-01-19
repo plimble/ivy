@@ -1,2 +1,0 @@
-export CAYL_PORT=3000
-export CAYL_FILE_PATH=./

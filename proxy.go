@@ -45,16 +45,30 @@ func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
 	var file io.Reader
 	var size int64
 	var modTime time.Time
+	var filename string
+	var paramsStr string
 	path := strings.Replace(r.URL.Path, f.root, "", 1)
 	strList := strings.Split(path, "/")
-	filename := strList[1]
+
+	switch len(strList) {
+	case 2:
+		filename = strList[1]
+		paramsStr = ""
+	case 3:
+		filename = strList[2]
+		paramsStr = strList[1]
+	default:
+		f.writeError(w, errors.New("Invalid Url"))
+		return
+	}
 
 	//load from cache
 	if !f.Config.IsDevelopment {
 		file, size, modTime, err = f.Cache.Load(filename)
-		buffer := bytes.NewBuffer(nil)
-		buffer.ReadFrom(file)
+
 		if err == nil {
+			buffer := bytes.NewBuffer(nil)
+			buffer.ReadFrom(file)
 			f.writeSuccess(w, buffer.Bytes(), size, modTime)
 			return
 		}
@@ -64,8 +78,9 @@ func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
 	if err == ErrNotFound {
 		file, size, modTime, err = f.Source.Load(filename)
 		if err == nil {
-			params, err := parseParams(strList[0])
+			params, err := parseParams(paramsStr)
 			img, err := process(params, f.Source.GetFilePath(filename), file)
+
 			if err != nil {
 				f.writeError(w, err)
 				return
@@ -85,6 +100,10 @@ func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (f *FileProxy) FlushCache() error {
+	return f.Cache.Flush()
+}
+
 func (f *FileProxy) writeSuccess(w http.ResponseWriter, file []byte, size int64, modTime time.Time) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("Content-Type", http.DetectContentType(file))
@@ -93,9 +112,8 @@ func (f *FileProxy) writeSuccess(w http.ResponseWriter, file []byte, size int64,
 	w.Header().Add("Content-Length", strconv.FormatInt(size, 10))
 
 	if f.Config.HttpCache > 0 && !f.Config.IsDevelopment {
-		w.Header().Add("Cache-Control", "public")
 		w.Header().Add("Cache-Control", "public; max-age="+strconv.FormatInt(f.Config.HttpCache, 10))
-		w.Header().Add("Last-Modified", "Mon, _2 Jan 2006 15:04:05 MST")
+		w.Header().Add("Last-Modified", modTime.Format("Mon, _2 Jan 2006 15:04:05 MST"))
 	}
 
 	w.Write(file)

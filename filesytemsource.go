@@ -19,9 +19,13 @@ func (fs *FileSystemSource) Load(filename string) (io.Reader, int64, time.Time, 
 	filename = path.Join(fs.root, filename)
 
 	file, err := os.Open(filename)
+	if os.IsNotExist(err) {
+		return nil, 0, time.Time{}, ErrNotFound
+	}
 	if err != nil {
 		return nil, 0, time.Time{}, err
 	}
+
 	ft, err := file.Stat()
 	if err != nil {
 		return nil, 0, time.Time{}, err

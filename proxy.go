@@ -41,6 +41,11 @@ func New(root string, source Source, cache Cache, config *Config) *FileProxy {
 }
 
 func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
+	if f.Config.HttpCache > 0 && !f.Config.IsDevelopment && r.Header.Get("If-Modified-Since") != "" {
+		f.writeNotModify(w)
+		return
+	}
+
 	var err error
 	var file io.Reader
 	var size int64
@@ -67,16 +72,7 @@ func (f *FileProxy) Load(w http.ResponseWriter, r *http.Request) {
 	//load from cache
 	if !f.Config.IsDevelopment {
 		file, size, modTime, err = f.Cache.Load(filename, params.String())
-
 		if err == nil {
-			if f.Config.HttpCache > 0 && !f.Config.IsDevelopment {
-				lastMod, err := time.Parse("Mon, _2 Jan 2006 15:04:05 MST", r.Header.Get("If-Modified-Since"))
-				if err == nil && lastMod.Equal(modTime) {
-					f.writeNotModify(w)
-					return
-				}
-			}
-
 			buffer := bytes.NewBuffer(nil)
 			buffer.ReadFrom(file)
 			f.writeSuccess(w, buffer.Bytes(), size, modTime)
@@ -119,10 +115,9 @@ func (f *FileProxy) writeSuccess(w http.ResponseWriter, file []byte, size int64,
 	w.Header().Add("Content-Length", strconv.FormatInt(size, 10))
 
 	if f.Config.HttpCache > 0 && !f.Config.IsDevelopment {
-
 		w.Header().Add("Cache-Control", "public; max-age="+strconv.FormatInt(f.Config.HttpCache, 10))
 		w.Header().Add("Last-Modified", modTime.Format("Mon, _2 Jan 2006 15:04:05 MST"))
-		w.Header().Add("Expires", modTime.Add(time.Second*time.Duration(f.Config.HttpCache)).Format("Mon, _2 Jan 2006 15:04:05 MST"))
+		w.Header().Add("Expires", time.Now().Add(time.Second*time.Duration(f.Config.HttpCache)).Format("Mon, _2 Jan 2006 15:04:05 MST"))
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -140,6 +135,10 @@ func (f *FileProxy) writeNotFoud(w http.ResponseWriter) {
 }
 
 func (f *FileProxy) writeNotModify(w http.ResponseWriter) {
+	if f.Config.HttpCache > 0 && !f.Config.IsDevelopment {
+		w.Header().Add("Cache-Control", "public; max-age="+strconv.FormatInt(f.Config.HttpCache, 10))
+		w.Header().Add("Expires", time.Now().Add(time.Second*time.Duration(f.Config.HttpCache)).Format("Mon, _2 Jan 2006 15:04:05 MST"))
+	}
 	w.WriteHeader(304)
 	w.Write(nil)
 }

@@ -78,7 +78,7 @@ func (f *FileProxy) isNotModify(r *http.Request) bool {
 }
 
 func (f *FileProxy) loadFromCache(filePath string, params *Params) (io.Reader, error) {
-	if f.Config.IsDevelopment && f.Cache == nil {
+	if f.Config.IsDevelopment || f.Cache == nil {
 		return nil, errors.New("no cache")
 	}
 

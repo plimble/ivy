@@ -41,10 +41,11 @@ type Params struct {
 	Scale     int
 	Quality   int
 	IsDefault bool
+	str       string
 }
 
 func parseParams(paramsStr string) (*Params, error) {
-	params := &Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true}
+	params := &Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true, ""}
 	if paramsStr == "" || paramsStr == "_" {
 		return params, nil
 	}
@@ -118,7 +119,10 @@ func parseParams(paramsStr string) (*Params, error) {
 }
 
 func (p *Params) String() string {
-	return fmt.Sprintf("%d_%d_%s_%s_%d_%d", p.Width, p.Height, p.CropMode, p.CropPos, p.Scale, p.Quality)
+	if p.str == "" {
+		p.str = fmt.Sprintf("%d_%d_%s_%s_%d_%d", p.Width, p.Height, p.CropMode, p.CropPos, p.Scale, p.Quality)
+	}
+	return p.str
 }
 
 func isValidCropMode(str string) bool {

@@ -22,7 +22,6 @@ func setup() *fileproxy.FileProxy {
 	}
 
 	fp := fileproxy.New(
-		"sourcetest",
 		fsource,
 		csource,
 		fconfig,
@@ -48,7 +47,7 @@ func TestProxyLoad(t *testing.T) {
 
 	req, _ := http.NewRequest("GET", "/test.png", nil)
 	res := httptest.NewRecorder()
-	fp.Load(res, req)
+	fp.Get("/test.png", res, req)
 
 	assert.Equal(t, 200, res.Code)
 }
@@ -59,7 +58,7 @@ func TestProxyLoadSize(t *testing.T) {
 
 	req, _ := http.NewRequest("GET", "sourcetest/w_10,h_10/test.png", nil)
 	res := httptest.NewRecorder()
-	fp.Load(res, req)
+	fp.Get("/w_10,h_10/test.png", res, req)
 
 	assert.Equal(t, 200, res.Code)
 }
@@ -70,7 +69,7 @@ func TestProxyLoadNotFound(t *testing.T) {
 
 	req, _ := http.NewRequest("GET", "/testnotfound.png", nil)
 	res := httptest.NewRecorder()
-	fp.Load(res, req)
+	fp.Get("/testnotfound.png", res, req)
 
 	assert.Equal(t, 404, res.Code)
 }

@@ -6,16 +6,19 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 )
 
 func TestSave(t *testing.T) {
 	fs := NewFileSystemCache("testcache")
 	pathFile := "subfolder/test.txt"
-	fullPath := path.Join(fs.root, pathFile)
-	defer os.Remove(fullPath)
+	paramsStr := ""
+	dir, filePath := filepath.Split(pathFile)
+	fullPath := path.Join(fs.root, dir, paramsStr+filePath)
+	defer os.RemoveAll("testcache")
 
-	err := fs.Save(pathFile, []byte("TESTCACHE"))
+	err := fs.Save(pathFile, "", []byte("TESTCACHE"))
 	assert.NoError(t, err)
 
 	byteString, err := ioutil.ReadFile(fullPath)
@@ -25,25 +28,24 @@ func TestSave(t *testing.T) {
 
 func TestSaveExist(t *testing.T) {
 	fs := NewFileSystemCache("testcache")
-	defer os.Remove(fs.root + "/test.txt")
+	defer os.RemoveAll("testcache")
 
-	err := fs.Save("test.txt", []byte("TESTCACHE"))
-	err = fs.Save("test.txt", []byte("TESTCACHE"))
+	err := fs.Save("test.txt", "", []byte("TESTCACHE"))
+	err = fs.Save("test.txt", "", []byte("TESTCACHE"))
 	assert.Error(t, err)
 }
 
 func TestLoadCache(t *testing.T) {
 	fs := NewFileSystemCache("testcache")
-	defer os.Remove(fs.root + "/test.txt")
+	pathFile := "subfolder/test.txt"
+	defer os.RemoveAll("testcache")
 
-	err := fs.Save("test.txt", []byte("TESTCACHE"))
+	err := fs.Save(pathFile, "", []byte("TESTCACHE"))
 	assert.NoError(t, err)
 
-	reader, size, time, err := fs.Load("test.txt")
+	reader, err := fs.Load(pathFile, "")
 
 	assert.NoError(t, err)
-	assert.NotEmpty(t, size)
-	assert.False(t, time.IsZero())
 
 	data := bytes.NewBuffer(nil)
 	data.ReadFrom(reader)
@@ -52,20 +54,18 @@ func TestLoadCache(t *testing.T) {
 
 func TestLoadNotExist(t *testing.T) {
 	fs := NewFileSystemCache("testcache")
-	reader, size, time, err := fs.Load("test.txt")
+	reader, err := fs.Load("test.txt", "")
 	assert.Error(t, err)
-	assert.Empty(t, size)
-	assert.True(t, time.IsZero())
 	assert.Nil(t, reader)
 }
 
 func TestFlush(t *testing.T) {
 	fs := NewFileSystemCache("testcache")
 
-	err := fs.Save("test.txt", []byte("TESTCACHE"))
+	err := fs.Save("test.txt", "", []byte("TESTCACHE"))
 	assert.NoError(t, err)
 
-	err = fs.Save("test2.txt", []byte("TESTCACHE"))
+	err = fs.Save("test2.txt", "", []byte("TESTCACHE"))
 	assert.NoError(t, err)
 
 	err = fs.Flush()

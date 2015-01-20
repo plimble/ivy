@@ -15,21 +15,17 @@ func TestLoadSource(t *testing.T) {
 	err := ioutil.WriteFile(fs.root+"/"+fileName, []byte("TESTSOURCE"), 0755)
 	assert.NoError(t, err)
 
-	reader, fsize, ftime, err := fs.Load(fileName)
+	reader, err := fs.Load(fileName)
 	assert.NotNil(t, reader)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, fsize)
-	assert.False(t, ftime.IsZero())
 }
 
 func TestLoadSourceNotExist(t *testing.T) {
 	fs := NewFileSystemSource("testsource")
 	fileName := "test.txt"
-	reader, fsize, ftime, err := fs.Load(fileName)
+	reader, err := fs.Load(fileName)
 	assert.Nil(t, reader)
 	assert.Error(t, err)
-	assert.Empty(t, fsize)
-	assert.True(t, ftime.IsZero())
 }
 
 func TestGetPath(t *testing.T) {

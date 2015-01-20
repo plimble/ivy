@@ -6,7 +6,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"time"
 )
 
 type FileSystemCache struct {
@@ -22,8 +21,9 @@ func NewFileSystemCache(root string) *FileSystemCache {
 }
 
 func (fs *FileSystemCache) Save(filename, paramsStr string, data []byte) error {
-	filename = path.Join(fs.root, paramsStr+"_"+filename)
-	dir := filepath.Dir(filename)
+	dir, filePath := filepath.Split(filename)
+	filename = path.Join(fs.root, dir, paramsStr+filePath)
+	dir = path.Join(fs.root, dir)
 
 	_, err := os.Open(dir)
 	if os.IsNotExist(err) {
@@ -43,23 +43,19 @@ func (fs *FileSystemCache) Save(filename, paramsStr string, data []byte) error {
 	return err
 }
 
-func (fs *FileSystemCache) Load(filename, paramsStr string) (io.Reader, int64, time.Time, error) {
-	filename = path.Join(fs.root, paramsStr+"_"+filename)
+func (fs *FileSystemCache) Load(filename, paramsStr string) (io.Reader, error) {
+	dir, filePath := filepath.Split(filename)
+	filename = path.Join(fs.root, dir, paramsStr+filePath)
 
 	file, err := os.Open(filename)
 	if os.IsNotExist(err) {
-		return nil, 0, time.Time{}, ErrNotFound
+		return nil, ErrNotFound
 	}
 	if err != nil {
-		return nil, 0, time.Time{}, err
+		return nil, err
 	}
 
-	ft, err := file.Stat()
-	if err != nil {
-		return nil, 0, time.Time{}, err
-	}
-
-	return file, ft.Size(), ft.ModTime(), nil
+	return file, nil
 }
 
 func (fs *FileSystemCache) Delete(filename string) error {

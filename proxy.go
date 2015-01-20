@@ -1,7 +1,6 @@
 package fileproxy
 
 import (
-	"bytes"
 	"errors"
 	"io"
 	"net/http"
@@ -78,7 +77,7 @@ func (f *FileProxy) isNotModify(r *http.Request) bool {
 	return false
 }
 
-func (f *FileProxy) loadFromCache(filePath string, params *Params) ([]byte, error) {
+func (f *FileProxy) loadFromCache(filePath string, params *Params) (io.Reader, error) {
 	if f.Config.IsDevelopment && f.Cache == nil {
 		return nil, errors.New("no cache")
 	}
@@ -88,13 +87,10 @@ func (f *FileProxy) loadFromCache(filePath string, params *Params) ([]byte, erro
 		return nil, err
 	}
 
-	buffer := bytes.NewBuffer(nil)
-	buffer.ReadFrom(file)
-
-	return buffer.Bytes(), nil
+	return file, nil
 }
 
-func (f *FileProxy) loadFromSource(filePath string, params *Params) ([]byte, error) {
+func (f *FileProxy) loadFromSource(filePath string, params *Params) (io.Reader, error) {
 	file, err := f.Source.Load(filePath)
 	if err != nil {
 		return nil, err
@@ -106,7 +102,7 @@ func (f *FileProxy) loadFromSource(filePath string, params *Params) ([]byte, err
 	}
 
 	if f.Cache != nil {
-		go f.Cache.Save(filePath, params.String(), img)
+		go f.Cache.Save(filePath, params.String(), img.Bytes())
 	}
 
 	return img, nil
@@ -164,11 +160,11 @@ func (f *FileProxy) setHeader(w http.ResponseWriter, filePath string) {
 	}
 }
 
-func (f *FileProxy) writeSuccess(w http.ResponseWriter, filePath string, file []byte) {
+func (f *FileProxy) writeSuccess(w http.ResponseWriter, filePath string, file io.Reader) {
 	f.setHeader(w, filePath)
 
 	w.WriteHeader(http.StatusOK)
-	w.Write(file)
+	io.Copy(w, file)
 }
 
 func (f *FileProxy) writeError(w http.ResponseWriter, err error) {

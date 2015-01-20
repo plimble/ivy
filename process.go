@@ -20,7 +20,7 @@ const (
 	PNG  = ".png"
 )
 
-func process(params *Params, filePath string, file io.Reader) ([]byte, error) {
+func process(params *Params, filePath string, file io.Reader) (*bytes.Buffer, error) {
 	ext := path.Ext(filePath)
 	img, err := decode(ext, file)
 	if err != nil {
@@ -54,9 +54,9 @@ func process(params *Params, filePath string, file io.Reader) ([]byte, error) {
 		}
 	}
 
-	buffer := new(bytes.Buffer)
+	buffer := &bytes.Buffer{}
 	err = encode(buffer, ext, dst, params)
-	return buffer.Bytes(), err
+	return buffer, err
 }
 
 func resize(img image.Image, width, height int) image.Image {

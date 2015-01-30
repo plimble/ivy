@@ -76,21 +76,18 @@ func parseParams(paramsStr string) (*Params, error) {
 			} else {
 				params.Height = value
 			}
-			params.IsDefault = false
 		case ParamCropMode:
 			value = strings.ToLower(value)
 			if !isValidCropMode(value) {
 				return nil, fmt.Errorf("invalid value for %s", key)
 			}
 			params.CropMode = value
-			params.IsDefault = false
 		case ParamCropPos:
 			value = strings.ToLower(value)
 			if !isValidCropPos(value) {
 				return nil, fmt.Errorf("invalid value for %s", key)
 			}
 			params.CropPos = value
-			params.IsDefault = false
 		case ParamScale:
 			value, err := strconv.Atoi(value)
 			if err != nil {
@@ -100,7 +97,6 @@ func parseParams(paramsStr string) (*Params, error) {
 				return nil, fmt.Errorf("value %d must be > 0: %s", value, key)
 			}
 			params.Scale = value
-			params.IsDefault = false
 		case ParamQuality:
 			value, err := strconv.Atoi(value)
 			if err != nil {
@@ -110,11 +106,11 @@ func parseParams(paramsStr string) (*Params, error) {
 				return nil, fmt.Errorf("value %d must be > 0: %s", value, key)
 			}
 			params.Quality = value
-			params.IsDefault = false
 		default:
 			return nil, fmt.Errorf("invalid parameter: %s", part)
 		}
 	}
+	params.IsDefault = false
 	params.raw = false
 
 	return params, nil

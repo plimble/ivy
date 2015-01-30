@@ -121,7 +121,7 @@ func parseParams(paramsStr string) (*Params, error) {
 }
 
 func (p *Params) String() string {
-	if p.str == "" {
+	if p.str != "" {
 		p.str = fmt.Sprintf("%d_%d_%s_%s_%d_%d", p.Width, p.Height, p.CropMode, p.CropPos, p.Scale, p.Quality)
 	}
 	return p.str

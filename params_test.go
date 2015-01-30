@@ -54,3 +54,10 @@ func BenchmarkParseParams(b *testing.B) {
 		parseParams("w_100,h_200,c_e,p_tc,s_2")
 	}
 }
+
+func BenchmarkParamsToString(b *testing.B) {
+	params, _ := parseParams("w_100,h_200,c_e,p_tc,s_2")
+	for i := 0; i < b.N; i++ {
+		params.String()
+	}
+}

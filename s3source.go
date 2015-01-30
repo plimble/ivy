@@ -37,6 +37,8 @@ func (fs *S3Source) Load(bucket, filename string) (*bytes.Buffer, error) {
 		return nil, err
 	}
 
+	defer res.Body.Close()
+
 	buffer := bytes.NewBuffer(make([]byte, 0, *res.ContentLength))
 	buffer.ReadFrom(res.Body)
 

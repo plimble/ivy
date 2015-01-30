@@ -3,7 +3,6 @@ package fileproxy
 import (
 	"bytes"
 	"errors"
-	"io"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -58,14 +57,12 @@ func (f *FileProxy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r
 
 	if img, err := f.loadFromSource(bucket, path, params); err == nil {
 		f.writeSuccess(w, path, img)
-		return
 	} else {
 		if err == ErrNotFound {
 			f.writeNotFoud(w)
 		} else {
 			f.writeError(w, err)
 		}
-		return
 	}
 }
 
@@ -77,7 +74,7 @@ func (f *FileProxy) isNotModify(r *http.Request) bool {
 	return false
 }
 
-func (f *FileProxy) loadFromCache(bucket, filePath string, params *Params) (io.Reader, error) {
+func (f *FileProxy) loadFromCache(bucket, filePath string, params *Params) (*bytes.Buffer, error) {
 	if f.Config.IsDevelopment || f.Cache == nil {
 		return nil, errors.New("no cache")
 	}
@@ -90,7 +87,7 @@ func (f *FileProxy) loadFromCache(bucket, filePath string, params *Params) (io.R
 	return file, nil
 }
 
-func (f *FileProxy) loadFromSource(bucket, filePath string, params *Params) (io.Reader, error) {
+func (f *FileProxy) loadFromSource(bucket, filePath string, params *Params) (*bytes.Buffer, error) {
 	file, err := f.Source.Load(bucket, filePath)
 	if err != nil {
 		return nil, err
@@ -138,11 +135,11 @@ func (f *FileProxy) setHeader(w http.ResponseWriter, filePath string) {
 	}
 }
 
-func (f *FileProxy) writeSuccess(w http.ResponseWriter, filePath string, file io.Reader) {
+func (f *FileProxy) writeSuccess(w http.ResponseWriter, filePath string, file *bytes.Buffer) {
 	f.setHeader(w, filePath)
 
 	w.WriteHeader(http.StatusOK)
-	io.Copy(w, file)
+	w.Write(file.Bytes())
 }
 
 func (f *FileProxy) writeError(w http.ResponseWriter, err error) {

@@ -29,6 +29,7 @@ deploy:
         code: |
           pwd
           ls -la
+          cd server
           scp -i $PRIVATEKEY_PATH fileproxy root@$DEPLOY_IP:/var/www
     - script:
         name: restart app

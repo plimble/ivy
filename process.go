@@ -21,6 +21,10 @@ const (
 )
 
 func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {
+	if params.raw {
+		return file, nil
+	}
+
 	ext := path.Ext(filePath)
 	img, err := decode(ext, file)
 	if err != nil {
@@ -28,10 +32,6 @@ func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer
 	}
 
 	var dst image.Image
-
-	if params.raw {
-		return file, nil
-	}
 
 	if params.CropMode != "" {
 		switch params.CropMode {

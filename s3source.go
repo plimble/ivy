@@ -30,7 +30,7 @@ func (fs *S3Source) Load(bucket, filename string) (*bytes.Buffer, error) {
 	})
 
 	if err != nil {
-		if err.Error() == "Access Denied" {
+		if err.Error() == "Access Denied" || err.Error() == "The specified key does not exist." {
 			return nil, errs.NewNotFound("not found")
 		}
 

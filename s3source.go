@@ -1,34 +1,44 @@
 package fileproxy
 
-// import (
-// 	"github.com/awslabs/aws-sdk-go/aws"
-// 	"io"
-// 	"os"
-// 	"path"
-// )
+import (
+	"bytes"
+	"github.com/awslabs/aws-sdk-go/aws"
+	"github.com/awslabs/aws-sdk-go/gen/s3"
+	"github.com/plimble/errs"
+	"io"
+)
 
-// type FileSystemSource struct {
-// 	root string
-// }
+type S3Source struct {
+	cli *s3.S3
+}
 
-// func NewS3Source(root string) *FileSystemSource {
-// 	return &FileSystemSource{root}
-// }
+func NewS3Source(accessKey, secretKey string) *S3Source {
+	creds := aws.Creds(accessKey, secretKey, "")
+	cli := s3.New(creds, "ap-southeast-1", nil)
 
-// func (fs *FileSystemSource) Load(filename string) (io.Reader, error) {
-// 	filename = path.Join(fs.root, filename)
+	return &S3Source{cli}
+}
 
-// 	file, err := os.Open(filename)
-// 	if os.IsNotExist(err) {
-// 		return nil, ErrNotFound
-// 	}
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (fs *S3Source) Load(bucket, filename string) (io.Reader, error) {
+	res, err := fs.cli.GetObject(&s3.GetObjectRequest{
+		Bucket: &bucket,
+		Key:    &filename,
+	})
 
-// 	return file, nil
-// }
+	if err != nil {
+		if err.Error() == "Access Denied" {
+			return nil, errs.NewNotFound("not found")
+		}
 
-// func (fs *FileSystemSource) GetFilePath(filename string) string {
-// 	return path.Join(fs.root, filename)
-// }
+		return nil, err
+	}
+
+	buffer := bytes.NewBuffer(nil)
+	buffer.ReadFrom(res.Body)
+
+	return buffer, nil
+}
+
+func (fs *S3Source) GetFilePath(bucket, filename string) string {
+	return filename
+}

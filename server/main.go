@@ -6,9 +6,11 @@ import (
 	"github.com/plimble/fileproxy"
 	"log"
 	"os"
+	"runtime"
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	app := cli.NewApp()
 	app.Name = "fileproxy"
 	app.Usage = "make an explosive entrance"

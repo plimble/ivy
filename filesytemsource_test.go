@@ -4,32 +4,38 @@ import (
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
+	"path"
 	"testing"
 )
 
-func TestLoadSource(t *testing.T) {
+func TestFileSourceLoad(t *testing.T) {
+	bucket := "bucket"
 	fs := NewFileSystemSource("testsource")
 	defer os.RemoveAll(fs.root)
 	fileName := "test.txt"
-	os.Mkdir(fs.root, 0755)
-	err := ioutil.WriteFile(fs.root+"/"+fileName, []byte("TESTSOURCE"), 0755)
+	err := os.MkdirAll(path.Join(fs.root, bucket), 0755)
 	assert.NoError(t, err)
 
-	reader, err := fs.Load(fileName)
+	err = ioutil.WriteFile(path.Join(fs.root, bucket, fileName), []byte("TESTSOURCE"), 0755)
+	assert.NoError(t, err)
+
+	reader, err := fs.Load(bucket, fileName)
 	assert.NotNil(t, reader)
 	assert.NoError(t, err)
 }
 
-func TestLoadSourceNotExist(t *testing.T) {
+func TestFileSourceLoadNotExist(t *testing.T) {
+	bucket := "bucket"
 	fs := NewFileSystemSource("testsource")
 	fileName := "test.txt"
-	reader, err := fs.Load(fileName)
+	reader, err := fs.Load(bucket, fileName)
 	assert.Nil(t, reader)
 	assert.Error(t, err)
 }
 
-func TestGetPath(t *testing.T) {
+func TestFileSourceGetPath(t *testing.T) {
+	bucket := "bucket"
 	fs := NewFileSystemSource("testsource")
-	filename := fs.GetFilePath("test.txt")
-	assert.Equal(t, "testsource/test.txt", filename)
+	filename := fs.GetFilePath(bucket, "test.txt")
+	assert.Equal(t, "testsource/bucket/test.txt", filename)
 }

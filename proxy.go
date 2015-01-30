@@ -13,14 +13,14 @@ import (
 var ErrNotFound = errors.New("not found")
 
 type Source interface {
-	Load(filename string) (io.Reader, error)
-	GetFilePath(filename string) string
+	Load(bucket string, filename string) (io.Reader, error)
+	GetFilePath(bucket string, filename string) string
 }
 
 type Cache interface {
-	Save(filename, paramsStr string, file []byte) error
-	Load(filename, paramsStr string) (io.Reader, error)
-	Delete(filename string) error
+	Save(bucket, filename, paramsStr string, file []byte) error
+	Load(bucket, filename, paramsStr string) (io.Reader, error)
+	Delete(bucket, filename string) error
 	Flush() error
 }
 
@@ -39,7 +39,7 @@ func New(source Source, cache Cache, config *Config) *FileProxy {
 	return &FileProxy{source, cache, config}
 }
 
-func (f *FileProxy) Get(path string, w http.ResponseWriter, r *http.Request) {
+func (f *FileProxy) Get(bucket, path string, w http.ResponseWriter, r *http.Request) {
 	if f.isNotModify(r) {
 		f.writeNotModify(w, path)
 		return
@@ -51,12 +51,12 @@ func (f *FileProxy) Get(path string, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if img, err := f.loadFromCache(filePath, params); err == nil {
+	if img, err := f.loadFromCache(bucket, filePath, params); err == nil {
 		f.writeSuccess(w, filePath, img)
 		return
 	}
 
-	if img, err := f.loadFromSource(filePath, params); err == nil {
+	if img, err := f.loadFromSource(bucket, filePath, params); err == nil {
 		f.writeSuccess(w, filePath, img)
 		return
 	} else {
@@ -77,12 +77,12 @@ func (f *FileProxy) isNotModify(r *http.Request) bool {
 	return false
 }
 
-func (f *FileProxy) loadFromCache(filePath string, params *Params) (io.Reader, error) {
+func (f *FileProxy) loadFromCache(bucket, filePath string, params *Params) (io.Reader, error) {
 	if f.Config.IsDevelopment || f.Cache == nil {
 		return nil, errors.New("no cache")
 	}
 
-	file, err := f.Cache.Load(filePath, params.String())
+	file, err := f.Cache.Load(bucket, filePath, params.String())
 	if err != nil {
 		return nil, err
 	}
@@ -90,19 +90,19 @@ func (f *FileProxy) loadFromCache(filePath string, params *Params) (io.Reader, e
 	return file, nil
 }
 
-func (f *FileProxy) loadFromSource(filePath string, params *Params) (io.Reader, error) {
-	file, err := f.Source.Load(filePath)
+func (f *FileProxy) loadFromSource(bucket, filePath string, params *Params) (io.Reader, error) {
+	file, err := f.Source.Load(bucket, filePath)
 	if err != nil {
 		return nil, err
 	}
 
-	img, err := process(params, f.Source.GetFilePath(filePath), file)
+	img, err := process(params, f.Source.GetFilePath(bucket, filePath), file)
 	if err != nil {
 		return nil, err
 	}
 
 	if f.Cache != nil {
-		go f.Cache.Save(filePath, params.String(), img.Bytes())
+		go f.Cache.Save(bucket, filePath, params.String(), img.Bytes())
 	}
 
 	return img, nil

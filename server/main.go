@@ -88,13 +88,10 @@ func main() {
 		a := ace.New()
 
 		a.GET("/:bucket/:params/*path", func(c *ace.C) {
-			bucket := c.Params.ByName("bucket")
-			path := c.Params.ByName("path")
-			params := c.Params.ByName("params")
 			start := stopwatch.Start()
-			fp.Get(bucket, params, path, c.Writer, c.Request)
+			fp.Get(c.Params.ByName("bucket"), c.Params.ByName("params"), c.Params.ByName("path"), c.Writer, c.Request)
 			watch := stopwatch.Stop(start)
-			log.Printf("[fileproxy] %d %s %s %s %v ms", c.Writer.Status(), bucket, params, path, watch.Milliseconds())
+			log.Printf("[fileproxy] %d %s %vms", c.Writer.Status(), c.Request.URL.String(), watch.Milliseconds())
 		})
 
 		url := c.String("url")

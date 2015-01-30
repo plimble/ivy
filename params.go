@@ -42,10 +42,11 @@ type Params struct {
 	Quality   int
 	IsDefault bool
 	str       string
+	raw       bool
 }
 
 func parseParams(paramsStr string) (*Params, error) {
-	params := &Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true, ""}
+	params := &Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true, "", true}
 	if paramsStr == "" || paramsStr == "_" || paramsStr == "0" {
 		return params, nil
 	}
@@ -114,6 +115,7 @@ func parseParams(paramsStr string) (*Params, error) {
 			return nil, fmt.Errorf("invalid parameter: %s", part)
 		}
 	}
+	params.raw = false
 
 	return params, nil
 }

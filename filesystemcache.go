@@ -1,8 +1,8 @@
 package fileproxy
 
 import (
+	"bytes"
 	"fmt"
-	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -43,7 +43,7 @@ func (fs *FileSystemCache) Save(bucket, filename, paramsStr string, data []byte)
 	return err
 }
 
-func (fs *FileSystemCache) Load(bucket, filename, paramsStr string) (io.Reader, error) {
+func (fs *FileSystemCache) Load(bucket, filename, paramsStr string) (*bytes.Buffer, error) {
 	dir, filePath := filepath.Split(filename)
 	filename = path.Join(fs.root, bucket, dir, paramsStr+filePath)
 
@@ -55,7 +55,10 @@ func (fs *FileSystemCache) Load(bucket, filename, paramsStr string) (io.Reader, 
 		return nil, err
 	}
 
-	return file, nil
+	buffer := bytes.NewBuffer(nil)
+	buffer.ReadFrom(file)
+
+	return buffer, nil
 }
 
 func (fs *FileSystemCache) Delete(bucket, filename string) error {

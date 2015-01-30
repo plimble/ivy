@@ -5,7 +5,6 @@ import (
 	"github.com/awslabs/aws-sdk-go/aws"
 	"github.com/awslabs/aws-sdk-go/gen/s3"
 	"github.com/plimble/errs"
-	"io"
 	"strings"
 )
 
@@ -20,7 +19,7 @@ func NewS3Source(accessKey, secretKey string) *S3Source {
 	return &S3Source{cli}
 }
 
-func (fs *S3Source) Load(bucket, filename string) (io.Reader, error) {
+func (fs *S3Source) Load(bucket, filename string) (*bytes.Buffer, error) {
 	if strings.HasPrefix(filename, "/") {
 		filename = filename[1:]
 	}
@@ -38,7 +37,7 @@ func (fs *S3Source) Load(bucket, filename string) (io.Reader, error) {
 		return nil, err
 	}
 
-	buffer := bytes.NewBuffer(nil)
+	buffer := bytes.NewBuffer(make([]byte, 0, *res.ContentLength))
 	buffer.ReadFrom(res.Body)
 
 	return buffer, nil

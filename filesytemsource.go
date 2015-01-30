@@ -1,7 +1,7 @@
 package fileproxy
 
 import (
-	"io"
+	"bytes"
 	"os"
 	"path"
 )
@@ -14,7 +14,7 @@ func NewFileSystemSource(root string) *FileSystemSource {
 	return &FileSystemSource{root}
 }
 
-func (fs *FileSystemSource) Load(bucket string, filename string) (io.Reader, error) {
+func (fs *FileSystemSource) Load(bucket string, filename string) (*bytes.Buffer, error) {
 	filename = path.Join(fs.root, bucket, filename)
 
 	file, err := os.Open(filename)
@@ -25,7 +25,10 @@ func (fs *FileSystemSource) Load(bucket string, filename string) (io.Reader, err
 		return nil, err
 	}
 
-	return file, nil
+	buffer := bytes.NewBuffer(nil)
+	buffer.ReadFrom(file)
+
+	return buffer, nil
 }
 
 func (fs *FileSystemSource) GetFilePath(bucket, filename string) string {

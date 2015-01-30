@@ -10,19 +10,19 @@ func TestParseParams(t *testing.T) {
 
 	params, err := parseParams("")
 	assert.NoError(err)
-	assert.Equal(&Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true, ""}, params)
+	assert.Equal(&Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true, "", true}, params)
 
 	params, err = parseParams("_")
 	assert.NoError(err)
-	assert.Equal(&Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true, ""}, params)
+	assert.Equal(&Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true, "", true}, params)
 
 	params, err = parseParams("w_100,h_200,c_e,p_tc,s_2")
 	assert.NoError(err)
-	assert.Equal(&Params{100, 200, "e", "tc", 2, 100, false, ""}, params)
+	assert.Equal(&Params{100, 200, "e", "tc", 2, 100, false, "", false}, params)
 
 	params, err = parseParams("w_100,h_200")
 	assert.NoError(err)
-	assert.Equal(&Params{100, 200, "", "", 1, 100, false, ""}, params)
+	assert.Equal(&Params{100, 200, "", "", 1, 100, false, "", false}, params)
 
 	params, err = parseParams("w_0,h_200,c_tc,s_2")
 	assert.Error(err)

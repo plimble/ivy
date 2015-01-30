@@ -20,7 +20,7 @@ const (
 	PNG  = ".png"
 )
 
-func process(params *Params, filePath string, file io.Reader) (*bytes.Buffer, error) {
+func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {
 	ext := path.Ext(filePath)
 	img, err := decode(ext, file)
 	if err != nil {
@@ -28,6 +28,10 @@ func process(params *Params, filePath string, file io.Reader) (*bytes.Buffer, er
 	}
 
 	var dst image.Image
+
+	if params.raw {
+		return file, nil
+	}
 
 	if params.CropMode != "" {
 		switch params.CropMode {

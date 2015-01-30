@@ -1,6 +1,7 @@
 package fileproxy
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"net/http"
@@ -12,13 +13,13 @@ import (
 var ErrNotFound = errors.New("not found")
 
 type Source interface {
-	Load(bucket string, filename string) (io.Reader, error)
+	Load(bucket string, filename string) (*bytes.Buffer, error)
 	GetFilePath(bucket string, filename string) string
 }
 
 type Cache interface {
 	Save(bucket, filename, paramsStr string, file []byte) error
-	Load(bucket, filename, paramsStr string) (io.Reader, error)
+	Load(bucket, filename, paramsStr string) (*bytes.Buffer, error)
 	Delete(bucket, filename string) error
 	Flush() error
 }

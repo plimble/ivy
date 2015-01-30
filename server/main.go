@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/bradhe/stopwatch"
 	"github.com/codegangsta/cli"
 	"github.com/plimble/ace"
 	"github.com/plimble/fileproxy"
@@ -90,8 +91,10 @@ func main() {
 			bucket := c.Params.ByName("bucket")
 			path := c.Params.ByName("path")
 			params := c.Params.ByName("params")
+			start := stopwatch.Start()
 			fp.Get(bucket, params, path, c.Writer, c.Request)
-			log.Printf("[fileproxy] %d %s %s", c.Writer.Status(), bucket, path)
+			watch := stopwatch.Stop(start)
+			log.Printf("[fileproxy] %d %s %s %s %v ms", c.Writer.Status(), bucket, params, path, watch.Milliseconds())
 		})
 
 		url := c.String("url")

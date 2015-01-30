@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -39,25 +38,25 @@ func New(source Source, cache Cache, config *Config) *FileProxy {
 	return &FileProxy{source, cache, config}
 }
 
-func (f *FileProxy) Get(bucket, path string, w http.ResponseWriter, r *http.Request) {
+func (f *FileProxy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r *http.Request) {
 	if f.isNotModify(r) {
 		f.writeNotModify(w, path)
 		return
 	}
 
-	filePath, params, err := f.parseURLPath(path)
+	params, err := parseParams(paramsStr)
 	if err != nil {
-		f.writeError(w, errors.New("Invalid Parse Url"))
+		f.writeError(w, err)
 		return
 	}
 
-	if img, err := f.loadFromCache(bucket, filePath, params); err == nil {
-		f.writeSuccess(w, filePath, img)
+	if img, err := f.loadFromCache(bucket, path, params); err == nil {
+		f.writeSuccess(w, path, img)
 		return
 	}
 
-	if img, err := f.loadFromSource(bucket, filePath, params); err == nil {
-		f.writeSuccess(w, filePath, img)
+	if img, err := f.loadFromSource(bucket, path, params); err == nil {
+		f.writeSuccess(w, path, img)
 		return
 	} else {
 		if err == ErrNotFound {
@@ -106,28 +105,6 @@ func (f *FileProxy) loadFromSource(bucket, filePath string, params *Params) (io.
 	}
 
 	return img, nil
-}
-
-func (f *FileProxy) parseURLPath(path string) (string, *Params, error) {
-	var params *Params
-	var filePath string
-	var err error
-
-	strList := strings.Split(path, "/")
-
-	switch len(strList) {
-	case 2:
-		filePath = strList[1]
-		params, err = parseParams("")
-	case 3:
-		filePath = strList[2]
-		params, err = parseParams(strList[1])
-	default:
-		filePath = ""
-		err = errors.New("Invalid Path Url")
-	}
-
-	return filePath, params, err
 }
 
 func (f *FileProxy) FlushCache() error {

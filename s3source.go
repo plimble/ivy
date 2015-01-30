@@ -6,6 +6,7 @@ import (
 	"github.com/awslabs/aws-sdk-go/gen/s3"
 	"github.com/plimble/errs"
 	"io"
+	"strings"
 )
 
 type S3Source struct {
@@ -20,6 +21,10 @@ func NewS3Source(accessKey, secretKey string) *S3Source {
 }
 
 func (fs *S3Source) Load(bucket, filename string) (io.Reader, error) {
+	if strings.HasPrefix(filename, "/") {
+		filename = filename[1:]
+	}
+
 	res, err := fs.cli.GetObject(&s3.GetObjectRequest{
 		Bucket: &bucket,
 		Key:    &filename,

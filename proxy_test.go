@@ -53,7 +53,7 @@ func TestProxyLoad(t *testing.T) {
 	bucket := "bucket"
 	req, _ := http.NewRequest("GET", "bucket/test.png", nil)
 	res := httptest.NewRecorder()
-	fp.Get(bucket, "/test.png", res, req)
+	fp.Get(bucket, "", "/test.png", res, req)
 
 	assert.Equal(t, 200, res.Code)
 }
@@ -65,7 +65,7 @@ func TestProxyLoadSize(t *testing.T) {
 
 	req, _ := http.NewRequest("GET", "bucket/sourcetest/w_10,h_10/test.png", nil)
 	res := httptest.NewRecorder()
-	fp.Get(bucket, "/w_10,h_10/test.png", res, req)
+	fp.Get(bucket, "w_10,h_10", "/test.png", res, req)
 
 	assert.Equal(t, 200, res.Code)
 }
@@ -77,7 +77,7 @@ func TestProxyLoadNotFound(t *testing.T) {
 
 	req, _ := http.NewRequest("GET", "/testnotfound.png", nil)
 	res := httptest.NewRecorder()
-	fp.Get(bucket, "/testnotfound.png", res, req)
+	fp.Get(bucket, "", "/testnotfound.png", res, req)
 
 	assert.Equal(t, 404, res.Code)
 }

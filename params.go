@@ -46,7 +46,7 @@ type Params struct {
 
 func parseParams(paramsStr string) (*Params, error) {
 	params := &Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true, ""}
-	if paramsStr == "" || paramsStr == "_" {
+	if paramsStr == "" || paramsStr == "_" || paramsStr == "0" {
 		return params, nil
 	}
 

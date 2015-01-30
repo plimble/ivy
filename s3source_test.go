@@ -8,14 +8,14 @@ import (
 
 var (
 	accessKey = os.Getenv("AWS_ACCESS_KEY")
-	secretKey = os.Getenv("oUeb1WiAykPGE0HoOVvMsu24u1Q")
+	secretKey = os.Getenv("AWS_SECRET_KEY")
 )
 
 func TestS3SourceLoad(t *testing.T) {
 	bucket := "plimble"
 	fs := NewS3Source(accessKey, secretKey)
 
-	reader, err := fs.Load(bucket, "test/a123/v1/test.jpg")
+	reader, err := fs.Load(bucket, "dashobard-ui-5.png")
 	assert.NotNil(t, reader)
 	assert.NoError(t, err)
 }

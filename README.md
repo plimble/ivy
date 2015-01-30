@@ -4,10 +4,10 @@ fileproxy
 file and image on the fly proxy
 
 ### Config fileproxy
-``` 
+```
     fsource := fileproxy.NewFileSystemSource("sourcefolder")
 	csource := fileproxy.NewFileSystemCache("cachefolder")
-	
+
 	fconfig := &fileproxy.Config{
 		IsDevelopment: false,
 		HttpCache:     66000,
@@ -21,14 +21,20 @@ file and image on the fly proxy
 ```
 
 ### Use with Server
-this example use ace framework 
+this example use ace framework
 
 `github.com/plimble/ace`
 
 ```
 	a := ace.New()
-	a.GET("/img/*imgname", func(c *ace.C) {
-		fp.Get(c.Params.ByName("imgname"), c.Writer, c.Request)
+	a.GET("/:bucket/:params/*path", func(c *ace.C) {
+		fp.Get(
+			c.Params.ByName("bucket"),
+			c.Params.ByName("params"),
+			c.Params.ByName("path"),
+			c.Writer,
+			c.Request,
+		)
 	})
 
 	a.Run(":3000")
@@ -39,25 +45,29 @@ this example use ace framework
 get image with original size
 
 ```
-	http://localhost:3000/img/test.jpg
+	http://localhost:3000/bucket/_/test.jpg
+```
+
+```
+	http://localhost:3000/bucket/0/test.jpg
 ```
 
 get image with size width 100px , height 100px
 
 ```
-	http://localhost:3000/img/w_100,h_100/test.jpg
+	http://localhost:3000/bucket/w_100,h_100/test.jpg
 ```
 
 get image with size and crop by scale ratio(c_s) image
 
 ```
-	http://localhost:3000/img/c_s,w_300,h_200/test.jpg
+	http://localhost:3000/bucket/c_s,w_300,h_200/test.jpg
 ```
 
 get image with size and crop position exact(c_e) middle center(p_mc) from image
 
 ```
-	http://localhost:3000/img/c_e,p_mc,w_500,h_300/test.jpg
+	http://localhost:3000/bucket/c_e,p_mc,w_500,h_300/test.jpg
 ```
 
 ###Params Table

@@ -54,6 +54,7 @@ func (fs *FileSystemCache) Load(bucket, filename, paramsStr string) (*bytes.Buff
 	if err != nil {
 		return nil, err
 	}
+	defer file.Close()
 
 	buffer := bytes.NewBuffer(nil)
 	buffer.ReadFrom(file)

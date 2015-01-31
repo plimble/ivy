@@ -24,6 +24,7 @@ func (fs *FileSystemSource) Load(bucket string, filename string) (*bytes.Buffer,
 	if err != nil {
 		return nil, err
 	}
+	defer file.Close()
 
 	buffer := bytes.NewBuffer(nil)
 	buffer.ReadFrom(file)

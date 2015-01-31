@@ -58,6 +58,7 @@ func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer
 		}
 	}
 
+	file.Reset()
 	err = encode(file, ext, dst, params)
 	return file, err
 }

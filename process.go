@@ -58,9 +58,8 @@ func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer
 		}
 	}
 
-	buffer := &bytes.Buffer{}
-	err = encode(buffer, ext, dst, params)
-	return buffer, err
+	err = encode(file, ext, dst, params)
+	return file, err
 }
 
 func resize(img image.Image, width, height int) image.Image {

@@ -68,7 +68,7 @@ func resize(img image.Image, width, height int) image.Image {
 
 	g := gift.New()
 
-	g.Add(gift.Resize(width, height, gift.LinearResampling))
+	g.Add(gift.Resize(width, height, gift.CubicResampling))
 
 	dst := image.NewRGBA(g.Bounds(imgBound))
 	g.Draw(dst, img)

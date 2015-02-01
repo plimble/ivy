@@ -2,7 +2,6 @@ package fileproxy
 
 import (
 	"bytes"
-	"path"
 )
 
 func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {

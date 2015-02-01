@@ -2,6 +2,7 @@ package fileproxy
 
 import (
 	"bytes"
+	"path"
 )
 
 func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {
@@ -31,7 +32,11 @@ func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer
 		gm.Crop(params.CropWidth, params.CropHeight)
 	}
 
-	if params.Quality != 100 {
+	if params.Quality != -1 {
+		switch path.Ext(filePath) {
+		case ".png":
+			params.Quality = 100 - params.Quality
+		}
 		gm.Quality(params.Quality)
 	}
 

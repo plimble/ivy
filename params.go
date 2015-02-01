@@ -44,7 +44,7 @@ func newParams() *Params {
 		CropWidth:     0,
 		CropHeight:    0,
 		Gravity:       "",
-		Quality:       100,
+		Quality:       -1,
 		EnableCrop:    false,
 		EnableResize:  false,
 		EnableGravity: false,
@@ -106,8 +106,8 @@ func parseParams(paramsStr string) (*Params, error) {
 			if err != nil {
 				return nil, fmt.Errorf("could not parse value for parameter: %s", key)
 			}
-			if params.Quality < 1 {
-				return nil, fmt.Errorf("value %d must be > 0: %s", value, key)
+			if params.Quality < 0 || params.Quality > 100 {
+				return nil, fmt.Errorf("value %d must be > 0 & <= 100: %s", value, key)
 			}
 		default:
 			return nil, fmt.Errorf("invalid parameter: %s", part)

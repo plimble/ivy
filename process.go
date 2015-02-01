@@ -33,10 +33,6 @@ func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer
 	}
 
 	if params.Quality != -1 {
-		switch path.Ext(filePath) {
-		case ".png":
-			params.Quality = 100 - params.Quality
-		}
 		gm.Quality(params.Quality)
 	}
 

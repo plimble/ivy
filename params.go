@@ -7,126 +7,149 @@ import (
 )
 
 const (
-	ParamWidth    = "w"
-	ParamHeight   = "h"
-	ParamCropPos  = "p"
-	ParamScale    = "s"
-	ParamCropMode = "c"
-	ParamQuality  = "q"
+	ParamResize  = "r"
+	ParamCrop    = "c"
+	ParamGravity = "g"
+	ParamQuality = "q"
 
-	CropModeExact = "e"
-	CropModeScale = "s"
-
-	CropTopLeft      = "tl"
-	CropTopCenter    = "tc"
-	CropTopRight     = "tr"
-	CropMiddleLeft   = "ml"
-	CropMiddleCenter = "mc"
-	CropMiddleRight  = "mr"
-	CropBottomLeft   = "bl"
-	CropBottomCenter = "bc"
-	CropBottomRight  = "br"
-
-	DefaultScale    = 1
-	DefaultQuality  = 100
-	DefaultCropMode = ""
-	DefaultCropPos  = ""
+	CropNorthWest = "nw"
+	CropNorth     = "n"
+	CropNorthEast = "ne"
+	CropWest      = "w"
+	CropCenter    = "c"
+	CropEast      = "e"
+	CropSouthWest = "sw"
+	CropSouth     = "s"
+	CropSouthEast = "se"
 )
 
 type Params struct {
-	Width     int
-	Height    int
-	CropMode  string
-	CropPos   string
-	Scale     int
-	Quality   int
-	IsDefault bool
-	str       string
-	raw       bool
+	Width         int
+	Height        int
+	CropWidth     int
+	CropHeight    int
+	Gravity       string
+	Quality       int
+	EnableCrop    bool
+	EnableResize  bool
+	EnableGravity bool
+	IsDefault     bool
+	str           string
+}
+
+func newParams() *Params {
+	return &Params{
+		Width:         0,
+		Height:        0,
+		CropWidth:     0,
+		CropHeight:    0,
+		Gravity:       "",
+		Quality:       100,
+		EnableCrop:    false,
+		EnableResize:  false,
+		EnableGravity: false,
+		IsDefault:     true,
+		str:           "",
+	}
 }
 
 func parseParams(paramsStr string) (*Params, error) {
-	params := &Params{0, 0, DefaultCropMode, DefaultCropPos, DefaultScale, DefaultQuality, true, "", true}
+	params := newParams()
 	if paramsStr == "" || paramsStr == "_" || paramsStr == "0" {
 		return params, nil
 	}
+
+	var err error
 
 	parts := strings.Split(paramsStr, ",")
 	for _, part := range parts {
 		if len(part) < 3 {
 			return nil, fmt.Errorf("invalid parameter: %s", part)
 		}
-		if string(part[1]) != "_" {
+		if part[1] != 95 {
 			return nil, fmt.Errorf("invalid parameter: %s", part)
 		}
 		key := string(part[0])
 		value := string(part[2:])
 
 		switch key {
-		case ParamWidth, ParamHeight:
-			value, err := strconv.Atoi(value)
+		case ParamResize:
+			params.Width, params.Height, err = getParamDimentsion(key, value, 0)
 			if err != nil {
-				return nil, fmt.Errorf("could not parse value for parameter: %s", key)
+				return nil, err
 			}
-			if value < 1 {
-				return nil, fmt.Errorf("value %d must be > 0: %s", value, key)
+			params.EnableResize = true
+		case ParamCrop:
+			params.CropWidth, params.CropHeight, err = getParamDimentsion(key, value, 1)
+			if err != nil {
+				return nil, err
 			}
-			if key == ParamWidth {
-				params.Width = value
-			} else {
-				params.Height = value
-			}
-		case ParamCropMode:
+			params.EnableCrop = true
+		case ParamGravity:
 			value = strings.ToLower(value)
-			if !isValidCropMode(value) {
+			if !isValidGravity(value) {
 				return nil, fmt.Errorf("invalid value for %s", key)
 			}
-			params.CropMode = value
-		case ParamCropPos:
-			value = strings.ToLower(value)
-			if !isValidCropPos(value) {
-				return nil, fmt.Errorf("invalid value for %s", key)
-			}
-			params.CropPos = value
-		case ParamScale:
-			value, err := strconv.Atoi(value)
-			if err != nil {
-				return nil, fmt.Errorf("could not parse value for parameter: %s", key)
-			}
-			if value < 1 {
-				return nil, fmt.Errorf("value %d must be > 0: %s", value, key)
-			}
-			params.Scale = value
+			params.Gravity = value
+			params.EnableGravity = true
+		// case ParamScale:
+		// 	vint, err = strconv.Atoi(value)
+		// 	if err != nil {
+		// 		return nil, fmt.Errorf("could not parse value for parameter: %s", key)
+		// 	}
+		// 	if vint < 1 {
+		// 		return nil, fmt.Errorf("value %d must be > 0: %s", value, key)
+		// 	}
+		// 	params.Scale = vint
 		case ParamQuality:
-			value, err := strconv.Atoi(value)
+			params.Quality, err = strconv.Atoi(value)
 			if err != nil {
 				return nil, fmt.Errorf("could not parse value for parameter: %s", key)
 			}
-			if value < 1 {
+			if params.Quality < 1 {
 				return nil, fmt.Errorf("value %d must be > 0: %s", value, key)
 			}
-			params.Quality = value
 		default:
 			return nil, fmt.Errorf("invalid parameter: %s", part)
 		}
 	}
 	params.IsDefault = false
-	params.raw = false
 
 	return params, nil
 }
 
 func (p *Params) String() string {
 	if p.str != "" {
-		p.str = fmt.Sprintf("%d_%d_%s_%s_%d_%d", p.Width, p.Height, p.CropMode, p.CropPos, p.Scale, p.Quality)
+		p.str = fmt.Sprintf("%d_%d_%d_%d_%d", p.Width, p.Height, p.CropWidth, p.CropHeight, p.Quality)
 	}
 	return p.str
 }
 
-func isValidCropMode(str string) bool {
-	return str == CropModeExact || str == CropModeScale
+func getParamDimentsion(key, value string, min int) (int, int, error) {
+	values := strings.Split(value, "x")
+	if len(values) != 2 {
+		return 0, 0, fmt.Errorf("invalid value for %s", key)
+	}
+
+	width, err := strconv.Atoi(values[0])
+	if err != nil {
+		return 0, 0, fmt.Errorf("could not parse value for parameter: %s", key)
+	}
+	if width < min {
+		return 0, 0, fmt.Errorf("value %d must be > 0: %s", value, key)
+	}
+
+	height, err := strconv.Atoi(values[1])
+	if err != nil {
+		return 0, 0, fmt.Errorf("could not parse value for parameter: %s", key)
+	}
+	if height < min {
+		return 0, 0, fmt.Errorf("value %d must be > 0: %s", value, key)
+	}
+
+	return width, height, nil
 }
 
-func isValidCropPos(str string) bool {
-	return str == CropTopLeft || str == CropTopCenter || str == CropTopRight || str == CropMiddleLeft || str == CropMiddleCenter || str == CropMiddleRight || str == CropBottomLeft || str == CropBottomCenter || str == CropBottomRight
+func isValidGravity(str string) bool {
+	return str == CropNorthWest || str == CropNorth || str == CropNorthEast || str == CropWest || str == CropCenter || str == CropEast || str == CropSouthWest || str == CropSouth || str == CropSouthEast
 }

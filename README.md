@@ -20,6 +20,12 @@ file and image on the fly proxy
 	)
 ```
 
+### Stand alone server
+
+```
+./server -h
+```
+
 ### Use with Server
 this example use ace framework
 
@@ -52,41 +58,62 @@ get image with original size
 	http://localhost:3000/bucket/0/test.jpg
 ```
 
-get image with size width 100px , height 100px
+resize 100x100
 
 ```
-	http://localhost:3000/bucket/w_100,h_100/test.jpg
+	http://localhost:3000/bucket/r_100x100/test.jpg
 ```
 
-get image with size and crop by scale ratio(c_s) image
+resize width 100px aspect ratio
 
 ```
-	http://localhost:3000/bucket/c_s,w_300,h_200/test.jpg
+	http://localhost:3000/bucket/r_100x0/test.jpg
 ```
 
-get image with size and crop position exact(c_e) middle center(p_mc) from image
+crop top left image 200x200
 
 ```
-	http://localhost:3000/bucket/c_e,p_mc,w_500,h_300/test.jpg
+	http://localhost:3000/bucket/c_200x200/test.jpg
+```
+
+crop with gravity NorthWest image 200x200
+
+```
+	http://localhost:3000/bucket/c_200x200,g_nw/test.jpg
+```
+
+resize 400x400 then crop 200x200 and gravity center
+
+```
+	http://localhost:3000/bucket/r_400x400,c_200x200,g_c/test.jpg
+```
+
+quality 100
+
+```
+	http://localhost:3000/bucket/q_100/test.jpg
 ```
 
 ###Params Table
 
 | Param | Description                            |
 |-------|----------------------------------------|
-| c_e   | Crop mode exact                        |
-| c_s   | Crop mode scale ratio                  |
-| s_2   | use for retina                         |
-| q_100 | Quality image maximum 100 (default 80) |
-| p_tl  | Crop position top left                 |
-| p_tc  | Crop position top center               |
-| p_tr  | Crop position top right                |
-| p_ml  | Crop position middle left              |
-| p_mc  | Crop position middle center            |
-| p_mr  | Crop position middle right             |
-| p_bl  | Crop position bottom left              |
-| p_bc  | Crop position bottom center            |
-| p_br  | Crop position bottom right             |
+| r_{width}x{height}   | Resize image, if 0 is aspect ratio                        |
+| c_{width}x{height}   | Crop image                  |
+| g_{direction}   | Gravity image                         |
+| q_{quality} | Quality image maximum 100 |
 
+###Gravity position
 
+| Param | Description                            |
+|-------|----------------------------------------|
+| nw    | North West                             |
+| n     | North                                  |
+| ne    | North East                             |
+| w     | West                                   |
+| c     | Center                                 |
+| e     | East                                   |
+| sw    | South West                             |
+| s     | South                                  |
+| se    | South East                             |
 

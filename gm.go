@@ -43,9 +43,10 @@ func (g *GMBuilder) Gravity(pos string) *GMBuilder {
 	return g
 }
 
-func gmProcess(in io.Reader, out io.Writer, gm *GMBuilder) error {
-	gm.args = append(gm.args, "-", "-")
-	cmd := exec.Command("gm", gm.args...)
+func (g *GMBuilder) Process(in io.Reader, out io.Writer) error {
+	g.args = append(g.args, "-", "-")
+	cmd := exec.Command("gm", g.args...)
+
 	stderr := bytes.NewBuffer(nil)
 	cmd.Stdin = in
 	cmd.Stdout = out
@@ -59,7 +60,7 @@ func gmProcess(in io.Reader, out io.Writer, gm *GMBuilder) error {
 
 	select {
 	case <-time.After(time.Duration(500000) * time.Millisecond):
-		err := killCmd(cmd)
+		err := g.killCmd(cmd)
 		if err != nil {
 			return err
 		}
@@ -74,7 +75,7 @@ func gmProcess(in io.Reader, out io.Writer, gm *GMBuilder) error {
 	return nil
 }
 
-func killCmd(cmd *exec.Cmd) error {
+func (g *GMBuilder) killCmd(cmd *exec.Cmd) error {
 	if err := cmd.Process.Kill(); err != nil {
 		return errs.NewErrors(fmt.Sprintf("Failed to kill command: %v", err))
 	}

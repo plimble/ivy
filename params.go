@@ -92,15 +92,6 @@ func parseParams(paramsStr string) (*Params, error) {
 			}
 			params.Gravity = value
 			params.EnableGravity = true
-		// case ParamScale:
-		// 	vint, err = strconv.Atoi(value)
-		// 	if err != nil {
-		// 		return nil, fmt.Errorf("could not parse value for parameter: %s", key)
-		// 	}
-		// 	if vint < 1 {
-		// 		return nil, fmt.Errorf("value %d must be > 0: %s", value, key)
-		// 	}
-		// 	params.Scale = vint
 		case ParamQuality:
 			params.Quality, err = strconv.Atoi(value)
 			if err != nil {

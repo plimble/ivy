@@ -30,7 +30,6 @@ deploy:
           pwd
           ls -la
           cd server
-          ssh -i $PRIVATEKEY_PATH root@$DEPLOY_IP "supervisorctl stop fileproxy"
           scp -i $PRIVATEKEY_PATH fileproxy root@$DEPLOY_IP:/var/www
     - script:
         name: restart app

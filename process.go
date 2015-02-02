@@ -36,7 +36,7 @@ func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer
 	}
 
 	out := &bytes.Buffer{}
-	err := gmProcess(file, out, gm)
+	err := gm.Process(file, out)
 
 	return out, err
 }

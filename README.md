@@ -1,4 +1,4 @@
-fileproxy [![godoc badge](http://godoc.org/github.com/plimble/fileproxy?status.png)](http://godoc.org/github.com/plimble/fileproxy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/fileproxy?t=1)](http://gocover.io/github.com/plimble/fileproxy) [![Build Status](https://api.travis-ci.org/plimble/fileproxy.svg?branch=master&t=1)](https://travis-ci.org/plimble/fileproxy) [![Go Report Card](http://goreportcard.com/badge/plimble/fileproxy?t=1)](http:/goreportcard.com/report/plimble/fileproxy)
+fileproxy [![godoc badge](http://godoc.org/github.com/plimble/fileproxy?status.png)](http://godoc.org/github.com/plimble/fileproxy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/fileproxy?t=2)](http://gocover.io/github.com/plimble/fileproxy) [![Build Status](https://api.travis-ci.org/plimble/fileproxy.svg?branch=master&t=2)](https://travis-ci.org/plimble/fileproxy) [![Go Report Card](http://goreportcard.com/badge/plimble/fileproxy?t=2)](http:/goreportcard.com/report/plimble/fileproxy)
 =========
 
 Assets & Image processing on the fly

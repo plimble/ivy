@@ -1,35 +1,60 @@
-fileproxy
+fileproxy [![godoc badge](http://godoc.org/github.com/plimble/fileproxy?status.png)](http://godoc.org/github.com/plimble/fileproxy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/fileproxy?t=1)](http://gocover.io/github.com/plimble/fileproxy) [![Build Status](https://api.travis-ci.org/plimble/fileproxy.svg?branch=master&t=1)](https://travis-ci.org/plimble/fileproxy) [![Go Report Card](http://goreportcard.com/badge/plimble/fileproxy?t=1)](http:/goreportcard.com/report/plimble/fileproxy)
 =========
 
-file and image on the fly proxy
+Assets & Image processing on the fly
 
-### Config fileproxy
+### Installation
+`go get -u github.com/plimble/ace`
+
+### Documentation
+ - [GoDoc](http://godoc.org/github.com/plimble/fileproxy)
+
+### Sources
+
+##### File System
+
 ```
-    fsource := fileproxy.NewFileSystemSource("sourcefolder")
-	csource := fileproxy.NewFileSystemCache("cachefolder")
+	source := fileproxy.NewFileSystemSource("/path/to/asset")
+	cache := fileproxy.NewFileSystemCache("/path/to/cache")
 
-	fconfig := &fileproxy.Config{
+	config := &fileproxy.Config{
 		IsDevelopment: false,
 		HttpCache:     66000,
 	}
 
-	fp := fileproxy.New(
-		fsource,
-		csource,
-		fconfig,
-	)
+	fp := fileproxy.New(source, cache, config)
 ```
 
-### Stand alone server
+##### AWS S3
+
+```
+	source := fileproxy.NewS3Source("accessKey", "secretKey")
+	cache := fileproxy.NewFileSystemCache("/path/to/cache")
+
+	config := &fileproxy.Config{
+		IsDevelopment: false,
+		HttpCache:     66000,
+	}
+
+	fp := fileproxy.New(source, cache, config)
+```
+
+### Cache
+
+You can use file system for caching or set `nil` for CDN like Cloudfront or disable caching
+
+
+### Server
+
+You can run built-in server or implement in your server
+
+For more config
 
 ```
 ./server -h
 ```
 
-### Use with Server
-this example use ace framework
-
-`github.com/plimble/ace`
+##### Ace Example
 
 ```
 	a := ace.New()
@@ -44,11 +69,12 @@ this example use ace framework
 	})
 
 	a.Run(":3000")
-
 ```
 
+You can run as middleware also
+
 ### Example Request Image
-get image with original size
+Get image with original size or non image
 
 ```
 	http://localhost:3000/bucket/_/test.jpg
@@ -58,37 +84,37 @@ get image with original size
 	http://localhost:3000/bucket/0/test.jpg
 ```
 
-resize 100x100
+Resize 100x100
 
 ```
 	http://localhost:3000/bucket/r_100x100/test.jpg
 ```
 
-resize width 100px aspect ratio
+Resize width 100px aspect ratio
 
 ```
 	http://localhost:3000/bucket/r_100x0/test.jpg
 ```
 
-crop top left image 200x200
+Crop top left image 200x200
 
 ```
 	http://localhost:3000/bucket/c_200x200/test.jpg
 ```
 
-crop with gravity NorthWest image 200x200
+Crop with gravity NorthWest image 200x200
 
 ```
 	http://localhost:3000/bucket/c_200x200,g_nw/test.jpg
 ```
 
-resize 400x400 then crop 200x200 and gravity center
+Resize 400x400 then crop 200x200 and gravity center
 
 ```
 	http://localhost:3000/bucket/r_400x400,c_200x200,g_c/test.jpg
 ```
 
-quality 100
+Quality 100
 
 ```
 	http://localhost:3000/bucket/q_100/test.jpg
@@ -96,12 +122,12 @@ quality 100
 
 ###Params Table
 
-| Param | Description                            |
-|-------|----------------------------------------|
-| r_{width}x{height}   | Resize image, if 0 is aspect ratio                        |
-| c_{width}x{height}   | Crop image                  |
-| g_{direction}   | Gravity image                         |
-| q_{quality} | Quality image maximum 100 |
+| Param               | Description                            |
+|---------------------|----------------------------------------|
+| r_{width}x{height}  | Resize image, if 0 is aspect ratio     |
+| c_{width}x{height}  | Crop image                             |
+| g_{direction}       | Gravity image                          |
+| q_{quality}         | Quality image maximum 100              |
 
 ###Gravity position
 
@@ -116,4 +142,9 @@ quality 100
 | sw    | South West                             |
 | s     | South                                  |
 | se    | South East                             |
+
+
+###Contributing
+
+If you'd like to help out with the project. You can put up a Pull Request.
 

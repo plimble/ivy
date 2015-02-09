@@ -53,60 +53,68 @@ func newParams() *Params {
 	}
 }
 
+func isEmptyParam(paramsStr string) bool {
+	return paramsStr == "" || paramsStr == "_" || paramsStr == "0"
+}
+
 func parseParams(paramsStr string) (*Params, error) {
 	params := newParams()
-	if paramsStr == "" || paramsStr == "_" || paramsStr == "0" {
+	if isEmptyParam(paramsStr) {
 		return params, nil
 	}
 
-	var err error
-
 	parts := strings.Split(paramsStr, ",")
 	for _, part := range parts {
-		if len(part) < 3 {
+		if len(part) < 3 || part[1] != 95 {
 			return nil, fmt.Errorf("invalid parameter: %s", part)
 		}
-		if part[1] != 95 {
-			return nil, fmt.Errorf("invalid parameter: %s", part)
-		}
-		key := string(part[0])
-		value := string(part[2:])
 
-		switch key {
-		case ParamResize:
-			params.Width, params.Height, err = getParamDimentsion(key, value, 0)
-			if err != nil {
-				return nil, err
-			}
-			params.EnableResize = true
-		case ParamCrop:
-			params.CropWidth, params.CropHeight, err = getParamDimentsion(key, value, 1)
-			if err != nil {
-				return nil, err
-			}
-			params.EnableCrop = true
-		case ParamGravity:
-			value = strings.ToLower(value)
-			if !isValidGravity(value) {
-				return nil, fmt.Errorf("invalid value for %s", key)
-			}
-			params.Gravity = value
-			params.EnableGravity = true
-		case ParamQuality:
-			params.Quality, err = strconv.Atoi(value)
-			if err != nil {
-				return nil, fmt.Errorf("could not parse value for parameter: %s", key)
-			}
-			if params.Quality < 0 || params.Quality > 100 {
-				return nil, fmt.Errorf("value %d must be > 0 & <= 100: %s", value, key)
-			}
-		default:
-			return nil, fmt.Errorf("invalid parameter: %s", part)
+		key := part[:1]
+		value := part[2:]
+
+		if err := setParams(params, key, value); err != nil {
+			return nil, err
 		}
 	}
 	params.IsDefault = false
 
 	return params, nil
+}
+
+func setParams(params *Params, key, value string) error {
+	var err error
+
+	switch key {
+	case ParamResize:
+		if params.Width, params.Height, err = getParamDimentsion(key, value, 0); err != nil {
+			return err
+		}
+		params.EnableResize = true
+	case ParamCrop:
+		if params.CropWidth, params.CropHeight, err = getParamDimentsion(key, value, 1); err != nil {
+			return err
+		}
+		params.EnableCrop = true
+	case ParamGravity:
+		value = strings.ToLower(value)
+		if !isValidGravity(value) {
+			return fmt.Errorf("invalid value for %s", key)
+		}
+		params.Gravity = value
+		params.EnableGravity = true
+	case ParamQuality:
+		params.Quality, err = strconv.Atoi(value)
+		if err != nil {
+			return fmt.Errorf("could not parse value for parameter: %s", key)
+		}
+		if params.Quality < 0 || params.Quality > 100 {
+			return fmt.Errorf("value %d must be > 0 & <= 100: %s", value, key)
+		}
+	default:
+		return fmt.Errorf("invalid parameter: %s_%s", key, value)
+	}
+
+	return nil
 }
 
 func (p *Params) String() string {

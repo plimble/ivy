@@ -1,10 +1,26 @@
 fileproxy [![godoc badge](http://godoc.org/github.com/plimble/fileproxy?status.png)](http://godoc.org/github.com/plimble/fileproxy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/fileproxy?t=2)](http://gocover.io/github.com/plimble/fileproxy) [![Build Status](https://api.travis-ci.org/plimble/fileproxy.svg?branch=master&t=2)](https://travis-ci.org/plimble/fileproxy) [![Go Report Card](http://goreportcard.com/badge/plimble/fileproxy?t=2)](http:/goreportcard.com/report/plimble/fileproxy)
 =========
 
-Assets & Image processing on the fly
+Assets & Image processing on the fly by GraphicsMagick
 
 ### Installation
 `go get -u github.com/plimble/ace`
+
+#####GraphicsMagick
+
+Ubuntu
+```shell
+sudo apt-get install python-software-properties
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:rwky/graphicsmagick
+sudo apt-get update
+sudo apt-get install graphicsmagick
+```
+
+OSX
+```
+brew install graphicsmagick
+```
 
 ### Documentation
  - [GoDoc](http://godoc.org/github.com/plimble/fileproxy)

@@ -82,9 +82,9 @@ COMMANDS:
 
 GLOBAL OPTIONS:
    --url, -u ":4900"	   server port
-   --httpcache, -t "0"	 if cache enable this is http cache in second
+   --httpcache, -t "0"	   if cache enable this is http cache in second
    --cache, -c 		       enable cache, specific  eg, file
-   --source, -s "file"	 source of image eg, file, s3
+   --source, -s "file"	   source of image eg, file, s3
    --s3key 		           if source is s3, AWS S3 access key [$AWS_ACCESS_KEY]
    --s3secret 		       if source is s3, AWS S3 secret key [$AWS_SECRET_KEY]
    --sourceroot 	       if source is file, specific root path of image
@@ -93,7 +93,7 @@ GLOBAL OPTIONS:
    --version, -v	       print the version
 ```
 
-##### Ace Example
+##### [Ace](https://github.com/plimble/ace) Example
 
 ```
 	a := ace.New()

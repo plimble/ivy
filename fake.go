@@ -43,6 +43,6 @@ func (c *fakeCache) Delete(bucket, filename string) error {
 	return c.err
 }
 
-func (c *fakeCache) Flush() error {
+func (c *fakeCache) Flush(bucket string) error {
 	return c.err
 }

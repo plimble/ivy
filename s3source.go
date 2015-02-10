@@ -8,10 +8,12 @@ import (
 	"strings"
 )
 
+//S3Source is aws s3 asset source
 type S3Source struct {
 	cli *s3.S3
 }
 
+//NewS3Source create s3 source with access key and secret key
 func NewS3Source(accessKey, secretKey string) *S3Source {
 	creds := aws.Creds(accessKey, secretKey, "")
 	cli := s3.New(creds, "ap-southeast-1", nil)
@@ -19,6 +21,7 @@ func NewS3Source(accessKey, secretKey string) *S3Source {
 	return &S3Source{cli}
 }
 
+//Load s3 file
 func (fs *S3Source) Load(bucket, filename string) (*bytes.Buffer, error) {
 	if strings.HasPrefix(filename, "/") {
 		filename = filename[1:]
@@ -45,6 +48,7 @@ func (fs *S3Source) Load(bucket, filename string) (*bytes.Buffer, error) {
 	return buffer, nil
 }
 
+//GetFilePath return filepath
 func (fs *S3Source) GetFilePath(bucket, filename string) string {
 	return filename
 }

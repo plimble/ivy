@@ -30,6 +30,14 @@ func TestGetRaw(t *testing.T) {
 	buffer := new(bytes.Buffer)
 	png.Encode(buffer, image.NewRGBA(image.Rect(0, 0, 200, 200)))
 
+	cache := newFakeCache()
+	cache.err = ErrNotFound
+	iv.Cache = cache
+
+	source := newFakeSource()
+	source.buffer = buffer
+	iv.Source = source
+
 	req, _ := http.NewRequest("GET", "bucket/_/test.png", nil)
 	res := httptest.NewRecorder()
 
@@ -40,6 +48,17 @@ func TestGetRaw(t *testing.T) {
 
 func TestGetWithParams(t *testing.T) {
 	iv := setup()
+
+	buffer := new(bytes.Buffer)
+	png.Encode(buffer, image.NewRGBA(image.Rect(0, 0, 200, 200)))
+
+	cache := newFakeCache()
+	cache.err = ErrNotFound
+	iv.Cache = cache
+
+	source := newFakeSource()
+	source.buffer = buffer
+	iv.Source = source
 
 	req, _ := http.NewRequest("GET", "bucket/r_10x10/test.png", nil)
 	res := httptest.NewRecorder()
@@ -84,4 +103,14 @@ func TestGetSourceNotFound(t *testing.T) {
 
 	assert.Equal(t, 404, res.Code)
 	assert.Equal(t, ErrNotFound.Error(), res.Body.String())
+}
+
+func TestDeleteCache(t *testing.T) {
+	iv := setup()
+	assert.NoError(t, iv.DeleteCache("bucket", "test.png"))
+}
+
+func TestFlushCache(t *testing.T) {
+	iv := setup()
+	assert.NoError(t, iv.FlushCache("bucket"))
 }

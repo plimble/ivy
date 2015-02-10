@@ -4,35 +4,35 @@ import (
 	"bytes"
 )
 
-func process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {
-	if params.IsDefault {
+func process(params *params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {
+	if params.isDefault {
 		return file, nil
 	}
 
 	gm := NewGMBuilder()
 	gm.Strip()
 
-	if params.EnableResize {
+	if params.enableResize {
 		switch {
-		case params.Width > 1 && params.Height > 1:
-			gm.Resize(params.Width, params.Height, "!")
-		case params.Width < 1 && params.Height > 1:
-			gm.Resize(1, params.Height, "^")
-		case params.Width > 1 && params.Height < 1:
-			gm.Resize(params.Width, 1, "^")
+		case params.width > 1 && params.height > 1:
+			gm.Resize(params.width, params.height, "!")
+		case params.width < 1 && params.height > 1:
+			gm.Resize(1, params.height, "^")
+		case params.width > 1 && params.height < 1:
+			gm.Resize(params.width, 1, "^")
 		}
 	}
 
-	if params.EnableGravity {
-		gm.Gravity(getGravity(params.Gravity))
+	if params.enableGravity {
+		gm.Gravity(getGravity(params.gravity))
 	}
 
-	if params.EnableCrop {
-		gm.Crop(params.CropWidth, params.CropHeight)
+	if params.enableCrop {
+		gm.Crop(params.cropWidth, params.cropHeight)
 	}
 
-	if params.Quality != -1 {
-		gm.Quality(params.Quality)
+	if params.quality != -1 {
+		gm.Quality(params.quality)
 	}
 
 	out := &bytes.Buffer{}

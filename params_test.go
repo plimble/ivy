@@ -8,25 +8,25 @@ import (
 func TestParseParams(t *testing.T) {
 	assert := assert.New(t)
 
-	params, err := parseParams("")
+	p, err := parseParams("")
 	assert.NoError(err)
-	assert.Equal(newParams(), params)
+	assert.Equal(newParams(), p)
 
-	params, err = parseParams("_")
+	p, err = parseParams("_")
 	assert.NoError(err)
-	assert.Equal(newParams(), params)
+	assert.Equal(newParams(), p)
 
-	params, err = parseParams("r_100x200,c_100x100,g_n,q_100")
+	p, err = parseParams("r_100x200,c_100x100,g_n,q_100")
 	assert.NoError(err)
-	assert.Equal(&Params{100, 200, 100, 100, "n", 100, true, true, true, false, ""}, params)
+	assert.Equal(&params{100, 200, 100, 100, "n", 100, true, true, true, false, ""}, p)
 
-	params, err = parseParams("r")
+	p, err = parseParams("r")
 	assert.Equal("invalid parameter: r", err.Error())
 
-	params, err = parseParams("rr")
+	p, err = parseParams("rr")
 	assert.Equal("invalid parameter: rr", err.Error())
 
-	params, err = parseParams("w_100x100")
+	p, err = parseParams("w_100x100")
 	assert.Equal("invalid parameter: w_100x100", err.Error())
 }
 

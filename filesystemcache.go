@@ -8,10 +8,12 @@ import (
 	"path/filepath"
 )
 
+//FileSystemCache
 type FileSystemCache struct {
 	root string
 }
 
+//NewFileSystemCache create file system cache
 func NewFileSystemCache(root string) *FileSystemCache {
 	if err := os.MkdirAll(root, 0755); err != nil {
 		panic(err)
@@ -20,6 +22,7 @@ func NewFileSystemCache(root string) *FileSystemCache {
 	return &FileSystemCache{root}
 }
 
+//Save file into file system
 func (fs *FileSystemCache) Save(bucket, filename, paramsStr string, data []byte) error {
 	dir, filePath := filepath.Split(filename)
 	filename = path.Join(fs.root, bucket, dir, paramsStr+filePath)
@@ -43,6 +46,7 @@ func (fs *FileSystemCache) Save(bucket, filename, paramsStr string, data []byte)
 	return err
 }
 
+//Load file from file system return not found if file doesn't exist
 func (fs *FileSystemCache) Load(bucket, filename, paramsStr string) (*bytes.Buffer, error) {
 	dir, filePath := filepath.Split(filename)
 	filename = path.Join(fs.root, bucket, dir, paramsStr+filePath)
@@ -62,6 +66,7 @@ func (fs *FileSystemCache) Load(bucket, filename, paramsStr string) (*bytes.Buff
 	return buffer, nil
 }
 
+//Delete delete individual ache file
 func (fs *FileSystemCache) Delete(bucket, filename string) error {
 	filename = path.Join(fs.root, bucket, filename)
 	ext := filepath.Ext(filename)
@@ -71,6 +76,7 @@ func (fs *FileSystemCache) Delete(bucket, filename string) error {
 	return os.Remove(filename)
 }
 
-func (fs *FileSystemCache) Flush() error {
-	return os.RemoveAll(fs.root)
+//Flush remove all cache file specific bucket
+func (fs *FileSystemCache) Flush(bucket string) error {
+	return os.RemoveAll(path.Join(fs.root, bucket))
 }

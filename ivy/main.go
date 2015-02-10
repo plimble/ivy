@@ -14,7 +14,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	app := cli.NewApp()
 	app.Name = "Ivy"
-	app.Usage = "make an explosive entrance"
+	app.Usage = "Assets & Image processing on the fly"
 	app.Author = "Witoo Harianto"
 	app.Email = "witooh@icloud.com"
 	app.Version = "1.0"

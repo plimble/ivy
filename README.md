@@ -72,31 +72,25 @@ For more config
 ./ivy -h
 
 NAME:
-   Ivy - make an explosive entrance
+   Ivy - Assets & Image processing on the fly
 
 USAGE:
    Ivy [global options] command [command options] [arguments...]
-
-VERSION:
-   1.0
-
-AUTHOR:
-  Witoo Harianto - <witooh@icloud.com>
 
 COMMANDS:
    help, h	Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --url, -u ":4900"	server port
-   --httpcache, -t "0"	if cache enable this is http cache in second
-   --cache, -c 		enable cache, specific  eg, file
-   --source, -s "file"	source of image eg, file, s3
-   --s3key 		if source is s3, AWS S3 access key [$AWS_ACCESS_KEY]
-   --s3secret 		if source is s3, AWS S3 secret key [$AWS_SECRET_KEY]
-   --sourceroot 	if source is file, specific root path of image
-   --cacheroot 		if cache is file, specific root path of cache
-   --help, -h		show help
-   --version, -v	print the version
+   --url, -u ":4900"	   server port
+   --httpcache, -t "0"	 if cache enable this is http cache in second
+   --cache, -c 		       enable cache, specific  eg, file
+   --source, -s "file"	 source of image eg, file, s3
+   --s3key 		           if source is s3, AWS S3 access key [$AWS_ACCESS_KEY]
+   --s3secret 		       if source is s3, AWS S3 secret key [$AWS_SECRET_KEY]
+   --sourceroot 	       if source is file, specific root path of image
+   --cacheroot 		       if cache is file, specific root path of cache
+   --help, -h		         show help
+   --version, -v	       print the version
 ```
 
 ##### Ace Example

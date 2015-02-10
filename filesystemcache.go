@@ -23,9 +23,9 @@ func NewFileSystemCache(root string) *FileSystemCache {
 }
 
 //Save file into file system
-func (fs *FileSystemCache) Save(bucket, filename, paramsStr string, data []byte) error {
+func (fs *FileSystemCache) Save(bucket, filename string, params *Params, data []byte) error {
 	dir, filePath := filepath.Split(filename)
-	filename = path.Join(fs.root, bucket, dir, paramsStr+filePath)
+	filename = path.Join(fs.root, bucket, dir, params.String()+filePath)
 	dir = path.Join(fs.root, bucket, dir)
 
 	_, err := os.Open(dir)
@@ -47,9 +47,9 @@ func (fs *FileSystemCache) Save(bucket, filename, paramsStr string, data []byte)
 }
 
 //Load file from file system return not found if file doesn't exist
-func (fs *FileSystemCache) Load(bucket, filename, paramsStr string) (*bytes.Buffer, error) {
+func (fs *FileSystemCache) Load(bucket, filename string, params *Params) (*bytes.Buffer, error) {
 	dir, filePath := filepath.Split(filename)
-	filename = path.Join(fs.root, bucket, dir, paramsStr+filePath)
+	filename = path.Join(fs.root, bucket, dir, params.String()+filePath)
 
 	file, err := os.Open(filename)
 	if os.IsNotExist(err) {
@@ -67,8 +67,9 @@ func (fs *FileSystemCache) Load(bucket, filename, paramsStr string) (*bytes.Buff
 }
 
 //Delete delete individual ache file
-func (fs *FileSystemCache) Delete(bucket, filename string) error {
-	filename = path.Join(fs.root, bucket, filename)
+func (fs *FileSystemCache) Delete(bucket, filename string, params *Params) error {
+	dir, filePath := filepath.Split(filename)
+	filename = path.Join(fs.root, bucket, dir, params.String()+filePath)
 	ext := filepath.Ext(filename)
 	if ext == "" {
 		return fmt.Errorf("this is not file")

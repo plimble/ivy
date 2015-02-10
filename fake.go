@@ -31,15 +31,15 @@ func newFakeCache() *fakeCache {
 	return &fakeCache{bytes.NewBuffer(nil), nil}
 }
 
-func (c *fakeCache) Save(bucket, filename, paramsStr string, file []byte) error {
+func (c *fakeCache) Save(bucket, filename string, params *Params, file []byte) error {
 	return c.err
 }
 
-func (c *fakeCache) Load(bucket, filename, paramsStr string) (*bytes.Buffer, error) {
+func (c *fakeCache) Load(bucket, filename string, params *Params) (*bytes.Buffer, error) {
 	return c.buffer, c.err
 }
 
-func (c *fakeCache) Delete(bucket, filename string) error {
+func (c *fakeCache) Delete(bucket, filename string, params *Params) error {
 	return c.err
 }
 
@@ -56,6 +56,6 @@ func newFakeProcessor() *fakeProcessor {
 	return &fakeProcessor{bytes.NewBuffer(nil), nil}
 }
 
-func (p *fakeProcessor) Process(params *params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {
+func (p *fakeProcessor) Process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {
 	return p.buffer, p.err
 }

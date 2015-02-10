@@ -108,7 +108,7 @@ func TestGetSourceNotFound(t *testing.T) {
 
 func TestDeleteCache(t *testing.T) {
 	iv := setup()
-	assert.NoError(t, iv.DeleteCache("bucket", "test.png"))
+	assert.NoError(t, iv.DeleteCache("bucket", "test.png", "r_100x100"))
 }
 
 func TestFlushCache(t *testing.T) {

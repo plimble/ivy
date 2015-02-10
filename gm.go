@@ -19,35 +19,35 @@ func NewGMProcessor() *GMProcessor {
 }
 
 //Process process image
-func (gm *GMProcessor) Process(params *params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {
-	if params.isDefault {
+func (gm *GMProcessor) Process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {
+	if params.IsDefault {
 		return file, nil
 	}
 
 	gmb := newGMBuilder()
 	gmb.Strip()
 
-	if params.enableResize {
+	if params.EnableResize {
 		switch {
-		case params.width > 1 && params.height > 1:
-			gmb.Resize(params.width, params.height, "!")
-		case params.width < 1 && params.height > 1:
-			gmb.Resize(1, params.height, "^")
-		case params.width > 1 && params.height < 1:
-			gmb.Resize(params.width, 1, "^")
+		case params.Width > 1 && params.Height > 1:
+			gmb.Resize(params.Width, params.Height, "!")
+		case params.Width < 1 && params.Height > 1:
+			gmb.Resize(1, params.Height, "^")
+		case params.Width > 1 && params.Height < 1:
+			gmb.Resize(params.Width, 1, "^")
 		}
 	}
 
-	if params.enableGravity {
-		gmb.Gravity(gm.getGravity(params.gravity))
+	if params.EnableGravity {
+		gmb.Gravity(gm.getGravity(params.Gravity))
 	}
 
-	if params.enableCrop {
-		gmb.Crop(params.cropWidth, params.cropHeight)
+	if params.EnableCrop {
+		gmb.Crop(params.CropWidth, params.CropHeight)
 	}
 
-	if params.quality != -1 {
-		gmb.Quality(params.quality)
+	if params.Quality != -1 {
+		gmb.Quality(params.Quality)
 	}
 
 	out := &bytes.Buffer{}

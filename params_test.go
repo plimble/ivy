@@ -8,25 +8,25 @@ import (
 func TestParseParams(t *testing.T) {
 	assert := assert.New(t)
 
-	p, err := parseParams("")
+	p, err := ParseParams("")
 	assert.NoError(err)
-	assert.Equal(newParams(), p)
+	assert.Equal(NewParams(), p)
 
-	p, err = parseParams("_")
+	p, err = ParseParams("_")
 	assert.NoError(err)
-	assert.Equal(newParams(), p)
+	assert.Equal(NewParams(), p)
 
-	p, err = parseParams("r_100x200,c_100x100,g_n,q_100")
+	p, err = ParseParams("r_100x200,c_100x100,g_n,q_100")
 	assert.NoError(err)
-	assert.Equal(&params{100, 200, 100, 100, "n", 100, true, true, true, false, ""}, p)
+	assert.Equal(&Params{100, 200, 100, 100, "n", 100, true, true, true, false, ""}, p)
 
-	p, err = parseParams("r")
+	p, err = ParseParams("r")
 	assert.Equal("invalid parameter: r", err.Error())
 
-	p, err = parseParams("rr")
+	p, err = ParseParams("rr")
 	assert.Equal("invalid parameter: rr", err.Error())
 
-	p, err = parseParams("w_100x100")
+	p, err = ParseParams("w_100x100")
 	assert.Equal("invalid parameter: w_100x100", err.Error())
 }
 
@@ -72,23 +72,23 @@ func TestParamsGetParamDimentsion(t *testing.T) {
 func TestParamsString(t *testing.T) {
 	assert := assert.New(t)
 
-	params, err := parseParams("r_100x200,c_100x100,g_n,q_100")
+	params, err := ParseParams("r_100x200,c_100x100,g_n,q_100")
 	assert.NoError(err)
 	assert.Equal("100_200_100_100_100", params.String())
 
-	params, err = parseParams("r_100x200")
+	params, err = ParseParams("r_100x200")
 	assert.NoError(err)
 	assert.Equal("100_200_0_0_-1", params.String())
 }
 
 func BenchmarkParseParams(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		parseParams("r_100x200,c_100x100,g_n,q_100")
+		ParseParams("r_100x200,c_100x100,g_n,q_100")
 	}
 }
 
 func BenchmarkParamsToString(b *testing.B) {
-	params, _ := parseParams("r_100x200,c_100x100,g_n,q_100")
+	params, _ := ParseParams("r_100x200,c_100x100,g_n,q_100")
 	for i := 0; i < b.N; i++ {
 		params.String()
 	}

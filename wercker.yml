@@ -1,4 +1,34 @@
 box: wercker/golang@1.3.1
+build:
+  # The steps that will be executed on build
+  steps:
+    # Sets the go workspace and places you package
+    # at the right place in the workspace tree
+    - setup-go-workspace
+
+    - script:
+        name: install graphicsmagicks
+        code: |
+          sudo apt-get install graphicsmagick
+    # Gets the dependencies
+    - script:
+        name: go get
+        code: |
+          cd $WERCKER_SOURCE_DIR
+          go version
+          go get -t ./...
+
+    # Build the project
+    - script:
+        name: go build
+        code: |
+          go build ./...
+
+    # Test the project
+    - script:
+        name: go test
+        code: |
+          go test ./...
 deploy:
   steps:
     - setup-go-workspace

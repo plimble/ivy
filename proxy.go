@@ -20,15 +20,15 @@ type Source interface {
 
 //Cache interface
 type Cache interface {
-	Save(bucket, filename, paramsStr string, file []byte) error
-	Load(bucket, filename, paramsStr string) (*bytes.Buffer, error)
-	Delete(bucket, filename string) error
+	Save(bucket, filename string, params *Params, file []byte) error
+	Load(bucket, filename string, params *Params) (*bytes.Buffer, error)
+	Delete(bucket, filename string, params *Params) error
 	Flush(bucket string) error
 }
 
 //Processor interface for process image
 type Processor interface {
-	Process(params *params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error)
+	Process(params *Params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error)
 }
 
 //Config config for ivy
@@ -65,7 +65,7 @@ func (iv *Ivy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r *htt
 		return
 	}
 
-	params, err := parseParams(paramsStr)
+	params, err := ParseParams(paramsStr)
 	if err != nil {
 		iv.writeError(w, err)
 		return
@@ -73,7 +73,7 @@ func (iv *Ivy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r *htt
 
 	var img *bytes.Buffer
 
-	if params.isDefault {
+	if params.IsDefault {
 		if img, err = iv.loadFromSource(bucket, path, params); err != nil {
 			iv.writeError(w, err)
 			return
@@ -91,8 +91,13 @@ func (iv *Ivy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r *htt
 }
 
 //DeleteCache remove individual cache file
-func (iv *Ivy) DeleteCache(bucket, filename string) error {
-	return iv.Cache.Delete(bucket, filename)
+func (iv *Ivy) DeleteCache(bucket, filename, paramsStr string) error {
+	params, err := ParseParams(paramsStr)
+	if err != nil {
+		return err
+	}
+
+	return iv.Cache.Delete(bucket, filename, params)
 }
 
 //FlushCache remove all cache file in specific bucket
@@ -108,12 +113,12 @@ func (iv *Ivy) isNotModify(r *http.Request) bool {
 	return false
 }
 
-func (iv *Ivy) loadFromCache(bucket, filePath string, params *params) (*bytes.Buffer, error) {
+func (iv *Ivy) loadFromCache(bucket, filePath string, params *Params) (*bytes.Buffer, error) {
 	if iv.Config.IsDevelopment || iv.Cache == nil {
 		return nil, errors.New("no cache")
 	}
 
-	file, err := iv.Cache.Load(bucket, filePath, params.String())
+	file, err := iv.Cache.Load(bucket, filePath, params)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +126,7 @@ func (iv *Ivy) loadFromCache(bucket, filePath string, params *params) (*bytes.Bu
 	return file, nil
 }
 
-func (iv *Ivy) loadFromSource(bucket, filePath string, params *params) (*bytes.Buffer, error) {
+func (iv *Ivy) loadFromSource(bucket, filePath string, params *Params) (*bytes.Buffer, error) {
 	file, err := iv.Source.Load(bucket, filePath)
 	if err != nil {
 		return nil, err
@@ -133,7 +138,7 @@ func (iv *Ivy) loadFromSource(bucket, filePath string, params *params) (*bytes.B
 	}
 
 	if iv.Cache != nil {
-		go iv.Cache.Save(bucket, filePath, params.String(), img.Bytes())
+		go iv.Cache.Save(bucket, filePath, params, img.Bytes())
 	}
 
 	return img, nil

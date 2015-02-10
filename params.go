@@ -23,32 +23,34 @@ const (
 	cropSouthEast = "se"
 )
 
-type params struct {
-	width         int
-	height        int
-	cropWidth     int
-	cropHeight    int
-	gravity       string
-	quality       int
-	enableCrop    bool
-	enableResize  bool
-	enableGravity bool
-	isDefault     bool
+//Params for set up image
+type Params struct {
+	Width         int
+	Height        int
+	CropWidth     int
+	CropHeight    int
+	Gravity       string
+	Quality       int
+	EnableCrop    bool
+	EnableResize  bool
+	EnableGravity bool
+	IsDefault     bool
 	str           string
 }
 
-func newParams() *params {
-	return &params{
-		width:         0,
-		height:        0,
-		cropWidth:     0,
-		cropHeight:    0,
-		gravity:       "",
-		quality:       -1,
-		enableCrop:    false,
-		enableResize:  false,
-		enableGravity: false,
-		isDefault:     true,
+//NewParams create default params
+func NewParams() *Params {
+	return &Params{
+		Width:         0,
+		Height:        0,
+		CropWidth:     0,
+		CropHeight:    0,
+		Gravity:       "",
+		Quality:       -1,
+		EnableCrop:    false,
+		EnableResize:  false,
+		EnableGravity: false,
+		IsDefault:     true,
 		str:           "",
 	}
 }
@@ -57,8 +59,9 @@ func isEmptyParam(paramsStr string) bool {
 	return paramsStr == "" || paramsStr == "_" || paramsStr == "0"
 }
 
-func parseParams(paramsStr string) (*params, error) {
-	params := newParams()
+//ParseParams parse params string into params struct
+func ParseParams(paramsStr string) (*Params, error) {
+	params := NewParams()
 	if isEmptyParam(paramsStr) {
 		return params, nil
 	}
@@ -76,38 +79,38 @@ func parseParams(paramsStr string) (*params, error) {
 			return nil, err
 		}
 	}
-	params.isDefault = false
+	params.IsDefault = false
 
 	return params, nil
 }
 
-func setParams(params *params, key, value string) error {
+func setParams(params *Params, key, value string) error {
 	var err error
 
 	switch key {
 	case paramResize:
-		if params.width, params.height, err = getParamDimentsion(key, value, 0); err != nil {
+		if params.Width, params.Height, err = getParamDimentsion(key, value, 0); err != nil {
 			return err
 		}
-		params.enableResize = true
+		params.EnableResize = true
 	case paramCrop:
-		if params.cropWidth, params.cropHeight, err = getParamDimentsion(key, value, 1); err != nil {
+		if params.CropWidth, params.CropHeight, err = getParamDimentsion(key, value, 1); err != nil {
 			return err
 		}
-		params.enableCrop = true
+		params.EnableCrop = true
 	case paramGravity:
 		value = strings.ToLower(value)
 		if !isValidGravity(value) {
 			return fmt.Errorf("invalid value for %s", key)
 		}
-		params.gravity = value
-		params.enableGravity = true
+		params.Gravity = value
+		params.EnableGravity = true
 	case paramQuality:
-		params.quality, err = strconv.Atoi(value)
+		params.Quality, err = strconv.Atoi(value)
 		if err != nil {
 			return fmt.Errorf("could not parse value for parameter: %s", key)
 		}
-		if params.quality < 0 || params.quality > 100 {
+		if params.Quality < 0 || params.Quality > 100 {
 			return fmt.Errorf("value %s must be > 0 & <= 100: %s", value, key)
 		}
 	default:
@@ -117,9 +120,9 @@ func setParams(params *params, key, value string) error {
 	return nil
 }
 
-func (p *params) String() string {
+func (p *Params) String() string {
 	if p.str == "" {
-		p.str = fmt.Sprintf("%d_%d_%d_%d_%d", p.width, p.height, p.cropWidth, p.cropHeight, p.quality)
+		p.str = fmt.Sprintf("%d_%d_%d_%d_%d", p.Width, p.Height, p.CropWidth, p.CropHeight, p.Quality)
 	}
 	return p.str
 }

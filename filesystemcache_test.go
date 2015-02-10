@@ -19,7 +19,7 @@ func TestFileCacheSave(t *testing.T) {
 	fullPath := path.Join(fs.root, bucket, dir, paramsStr+filePath)
 	defer os.RemoveAll("testcache")
 
-	err := fs.Save(bucket, pathFile, "", []byte("TESTCACHE"))
+	err := fs.Save(bucket, pathFile, NewParams(), []byte("TESTCACHE"))
 	assert.NoError(t, err)
 
 	byteString, err := ioutil.ReadFile(fullPath)
@@ -32,8 +32,8 @@ func TestFileCacheSaveExist(t *testing.T) {
 	fs := NewFileSystemCache("testcache")
 	defer os.RemoveAll("testcache")
 
-	err := fs.Save(bucket, "test.txt", "", []byte("TESTCACHE"))
-	err = fs.Save(bucket, "test.txt", "", []byte("TESTCACHE"))
+	err := fs.Save(bucket, "test.txt", NewParams(), []byte("TESTCACHE"))
+	err = fs.Save(bucket, "test.txt", NewParams(), []byte("TESTCACHE"))
 	assert.Error(t, err)
 }
 
@@ -43,10 +43,10 @@ func TestFileCacheLoad(t *testing.T) {
 	pathFile := "subfolder/test.txt"
 	defer os.RemoveAll("testcache")
 
-	err := fs.Save(bucket, pathFile, "", []byte("TESTCACHE"))
+	err := fs.Save(bucket, pathFile, NewParams(), []byte("TESTCACHE"))
 	assert.NoError(t, err)
 
-	reader, err := fs.Load(bucket, pathFile, "")
+	reader, err := fs.Load(bucket, pathFile, NewParams())
 
 	assert.NoError(t, err)
 
@@ -58,9 +58,27 @@ func TestFileCacheLoad(t *testing.T) {
 func TestFileCacheLoadNotExist(t *testing.T) {
 	bucket := "bucket"
 	fs := NewFileSystemCache("testcache")
-	reader, err := fs.Load(bucket, "test.txt", "")
+	reader, err := fs.Load(bucket, "test.txt", NewParams())
 	assert.Error(t, err)
 	assert.Nil(t, reader)
+}
+
+func TestFileCacheDelete(t *testing.T) {
+	bucket := "bucket"
+	fs := NewFileSystemCache("testcache")
+	defer os.RemoveAll("testcache")
+
+	params, err := ParseParams("r_100x200")
+	assert.NoError(t, err)
+
+	err = fs.Save(bucket, "test.txt", params, []byte("TESTCACHE"))
+	assert.NoError(t, err)
+
+	err = fs.Delete(bucket, "test.txt", params)
+	assert.NoError(t, err)
+
+	_, err = os.Open(path.Join(fs.root, bucket, "100_200_0_0_-1test.txt"))
+	assert.True(t, os.IsNotExist(err))
 }
 
 func TestFileCacheFlush(t *testing.T) {
@@ -68,10 +86,10 @@ func TestFileCacheFlush(t *testing.T) {
 	fs := NewFileSystemCache("testcache")
 	defer os.RemoveAll("testcache")
 
-	err := fs.Save(bucket, "test.txt", "", []byte("TESTCACHE"))
+	err := fs.Save(bucket, "test.txt", NewParams(), []byte("TESTCACHE"))
 	assert.NoError(t, err)
 
-	err = fs.Save(bucket, "test2.txt", "", []byte("TESTCACHE"))
+	err = fs.Save(bucket, "test2.txt", NewParams(), []byte("TESTCACHE"))
 	assert.NoError(t, err)
 
 	err = fs.Flush(bucket)

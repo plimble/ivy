@@ -1,4 +1,4 @@
-fileproxy [![godoc badge](http://godoc.org/github.com/plimble/fileproxy?status.png)](http://godoc.org/github.com/plimble/fileproxy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/fileproxy?t=2)](http://gocover.io/github.com/plimble/fileproxy) [![Build Status](https://api.travis-ci.org/plimble/fileproxy.svg?branch=master&t=2)](https://travis-ci.org/plimble/fileproxy) [![Go Report Card](http://goreportcard.com/badge/plimble/fileproxy?t=2)](http:/goreportcard.com/report/plimble/fileproxy)
+Ivy [![godoc badge](http://godoc.org/github.com/plimble/ivy?status.png)](http://godoc.org/github.com/plimble/ivy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/ivy?t=2)](http://gocover.io/github.com/plimble/ivy) [![Build Status](https://api.travis-ci.org/plimble/ivy.svg?branch=master&t=2)](https://travis-ci.org/plimble/ivy) [![Go Report Card](http://goreportcard.com/badge/plimble/ivy?t=2)](http:/goreportcard.com/report/plimble/ivy)
 =========
 
 Assets & Image processing on the fly by GraphicsMagick
@@ -23,36 +23,36 @@ brew install graphicsmagick
 ```
 
 ### Documentation
- - [GoDoc](http://godoc.org/github.com/plimble/fileproxy)
+ - [GoDoc](http://godoc.org/github.com/plimble/ivy)
 
 ### Sources
 
 ##### File System
 
 ```
-	source := fileproxy.NewFileSystemSource("/path/to/asset")
-	cache := fileproxy.NewFileSystemCache("/path/to/cache")
+	source := ivy.NewFileSystemSource("/path/to/asset")
+	cache := ivy.NewFileSystemCache("/path/to/cache")
 
-	config := &fileproxy.Config{
+	config := &ivy.Config{
 		IsDevelopment: false,
 		HttpCache:     66000,
 	}
 
-	fp := fileproxy.New(source, cache, config)
+	fp := ivy.New(source, cache, config)
 ```
 
 ##### AWS S3
 
 ```
-	source := fileproxy.NewS3Source("accessKey", "secretKey")
-	cache := fileproxy.NewFileSystemCache("/path/to/cache")
+	source := ivy.NewS3Source("accessKey", "secretKey")
+	cache := ivy.NewFileSystemCache("/path/to/cache")
 
-	config := &fileproxy.Config{
+	config := &ivy.Config{
 		IsDevelopment: false,
 		HttpCache:     66000,
 	}
 
-	fp := fileproxy.New(source, cache, config)
+	fp := ivy.New(source, cache, config)
 ```
 
 ### Cache

@@ -1,83 +1,87 @@
-package ivy_test
+package ivy
 
 import (
 	"bytes"
-	"github.com/plimble/ivy"
 	"github.com/stretchr/testify/assert"
 	"image"
 	"image/png"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path"
 	"testing"
 )
 
-func setup() *ivy.Ivy {
-	fsource := ivy.NewFileSystemSource("sourcefolder")
-	csource := ivy.NewFileSystemCache("cachefolder")
-	fconfig := &ivy.Config{
+func setup() *Ivy {
+	source := newFakeSource()
+	cache := newFakeCache()
+
+	config := &Config{
 		IsDevelopment: false,
 		HttpCache:     66000,
 	}
 
-	fp := ivy.New(
-		fsource,
-		csource,
-		fconfig,
-	)
+	iv := New(source, cache, config)
 
-	bucket := "bucket"
-	os.MkdirAll(path.Join("sourcefolder", bucket), 0755)
+	return iv
+}
+
+func TestGetRaw(t *testing.T) {
+	iv := setup()
 
 	buffer := new(bytes.Buffer)
 	png.Encode(buffer, image.NewRGBA(image.Rect(0, 0, 200, 200)))
-	err := ioutil.WriteFile("sourcefolder/bucket/test.png", buffer.Bytes(), 0755)
-	if err != nil {
-		panic(err)
-	}
 
-	return fp
-}
-
-func teardown() {
-	os.RemoveAll("sourcefolder")
-	os.RemoveAll("cachefolder")
-}
-
-func TestProxyLoad(t *testing.T) {
-	fp := setup()
-	// defer teardown()
-
-	bucket := "bucket"
-	req, _ := http.NewRequest("GET", "bucket/test.png", nil)
+	req, _ := http.NewRequest("GET", "bucket/_/test.png", nil)
 	res := httptest.NewRecorder()
-	fp.Get(bucket, "", "/test.png", res, req)
+
+	iv.Get("bucket", "", "/test.png", res, req)
 
 	assert.Equal(t, 200, res.Code)
 }
 
-func TestProxyResizeSize(t *testing.T) {
-	bucket := "bucket"
-	fp := setup()
-	// defer teardown()
+func TestGetWithParams(t *testing.T) {
+	iv := setup()
 
-	req, _ := http.NewRequest("GET", "bucket/sourcetest/r_10x10/test.png", nil)
+	req, _ := http.NewRequest("GET", "bucket/r_10x10/test.png", nil)
 	res := httptest.NewRecorder()
-	fp.Get(bucket, "r_10x10", "/test.png", res, req)
+	iv.Get("bucket", "r_10x10", "/test.png", res, req)
 
 	assert.Equal(t, 200, res.Code)
 }
 
-func TestProxyLoadNotFound(t *testing.T) {
-	bucket := "bucket"
-	fp := setup()
-	defer teardown()
+func TestGetCacheNotFound(t *testing.T) {
+	iv := setup()
 
-	req, _ := http.NewRequest("GET", "/testnotfound.png", nil)
+	cache := newFakeCache()
+	cache.err = ErrNotFound
+	iv.Cache = cache
+
+	source := newFakeSource()
+	source.err = ErrNotFound
+	iv.Source = source
+
+	req, _ := http.NewRequest("GET", "bucket/r_100x100/testnotfound.png", nil)
 	res := httptest.NewRecorder()
-	fp.Get(bucket, "", "/testnotfound.png", res, req)
+	iv.Get("bucket", "r_100x100", "/testnotfound.png", res, req)
 
 	assert.Equal(t, 404, res.Code)
+	assert.Equal(t, ErrNotFound.Error(), res.Body.String())
+}
+
+func TestGetSourceNotFound(t *testing.T) {
+	iv := setup()
+
+	cache := newFakeCache()
+	cache.err = ErrNotFound
+	iv.Cache = cache
+
+	source := newFakeSource()
+	source.err = ErrNotFound
+	iv.Source = source
+
+	req, _ := http.NewRequest("GET", "bucket/r_100x100/testnotfound.png", nil)
+	res := httptest.NewRecorder()
+	iv.Get("bucket", "r_100x100", "/testnotfound.png", res, req)
+
+	assert.Equal(t, 404, res.Code)
+	assert.Equal(t, ErrNotFound.Error(), res.Body.String())
 }

@@ -38,32 +38,35 @@ func New(source Source, cache Cache, config *Config) *Ivy {
 	return &Ivy{source, cache, config}
 }
 
-func (f *Ivy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r *http.Request) {
-	if f.isNotModify(r) {
-		f.writeNotModify(w, path)
+func (iv *Ivy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r *http.Request) {
+	if iv.isNotModify(r) {
+		iv.writeNotModify(w, path)
 		return
 	}
 
 	params, err := parseParams(paramsStr)
 	if err != nil {
-		f.writeError(w, err)
+		iv.writeError(w, err)
 		return
 	}
 
-	if img, err := f.loadFromCache(bucket, path, params); err == nil {
-		f.writeSuccess(w, path, img)
-		return
-	}
+	var img *bytes.Buffer
 
-	if img, err := f.loadFromSource(bucket, path, params); err == nil {
-		f.writeSuccess(w, path, img)
+	if params.IsDefault {
+		if img, err = iv.loadFromSource(bucket, path, params); err != nil {
+			iv.writeError(w, err)
+			return
+		}
 	} else {
-		if err == ErrNotFound {
-			f.writeNotFoud(w)
-		} else {
-			f.writeError(w, err)
+		if img, err = iv.loadFromCache(bucket, path, params); err != nil {
+			if img, err = iv.loadFromSource(bucket, path, params); err != nil {
+				iv.writeError(w, err)
+				return
+			}
 		}
 	}
+
+	iv.writeSuccess(w, path, img)
 }
 
 func (f *Ivy) isNotModify(r *http.Request) bool {
@@ -143,13 +146,14 @@ func (f *Ivy) writeSuccess(w http.ResponseWriter, filePath string, file *bytes.B
 }
 
 func (f *Ivy) writeError(w http.ResponseWriter, err error) {
-	w.WriteHeader(500)
-	w.Write([]byte(err.Error()))
-}
-
-func (f *Ivy) writeNotFoud(w http.ResponseWriter) {
-	w.WriteHeader(404)
-	w.Write([]byte("not found"))
+	switch err {
+	case ErrNotFound:
+		w.WriteHeader(404)
+		w.Write([]byte("not found"))
+	default:
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+	}
 }
 
 func (f *Ivy) writeNotModify(w http.ResponseWriter, filePath string) {

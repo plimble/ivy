@@ -115,3 +115,26 @@ func TestFlushCache(t *testing.T) {
 	iv := setup()
 	assert.NoError(t, iv.FlushCache("bucket"))
 }
+
+func Test304NotModified(t *testing.T) {
+	iv := setup()
+
+	buffer := new(bytes.Buffer)
+	png.Encode(buffer, image.NewRGBA(image.Rect(0, 0, 200, 200)))
+
+	cache := newFakeCache()
+	cache.err = ErrNotFound
+	iv.Cache = cache
+
+	source := newFakeSource()
+	source.buffer = buffer
+	iv.Source = source
+
+	req, _ := http.NewRequest("GET", "bucket/_/test.png", nil)
+	req.Header.Add("If-Modified-Since", "Tue, 01 Jan 2008 00:00:00 GMT")
+	res := httptest.NewRecorder()
+
+	iv.Get("bucket", "", "/test.png", res, req)
+
+	assert.Equal(t, 304, res.Code)
+}

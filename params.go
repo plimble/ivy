@@ -118,7 +118,7 @@ func setParams(params *Params, key, value string) error {
 }
 
 func (p *Params) String() string {
-	if p.str != "" {
+	if p.str == "" {
 		p.str = fmt.Sprintf("%d_%d_%d_%d_%d", p.Width, p.Height, p.CropWidth, p.CropHeight, p.Quality)
 	}
 	return p.str

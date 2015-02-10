@@ -74,7 +74,11 @@ func TestParamsString(t *testing.T) {
 
 	params, err := parseParams("r_100x200,c_100x100,g_n,q_100")
 	assert.NoError(err)
-	assert.Equal("123", params.String())
+	assert.Equal("100_200_100_100_100", params.String())
+
+	params, err = parseParams("r_100x200")
+	assert.NoError(err)
+	assert.Equal("100_200_0_0_-1", params.String())
 }
 
 func BenchmarkParseParams(b *testing.B) {

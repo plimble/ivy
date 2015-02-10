@@ -46,3 +46,16 @@ func (c *fakeCache) Delete(bucket, filename string) error {
 func (c *fakeCache) Flush(bucket string) error {
 	return c.err
 }
+
+type fakeProcessor struct {
+	buffer *bytes.Buffer
+	err    error
+}
+
+func newFakeProcessor() *fakeProcessor {
+	return &fakeProcessor{bytes.NewBuffer(nil), nil}
+}
+
+func (p *fakeProcessor) Process(params *params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error) {
+	return p.buffer, p.err
+}

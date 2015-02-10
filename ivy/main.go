@@ -80,7 +80,7 @@ func main() {
 			cache = nil
 		}
 
-		fp := ivy.New(source, cache, &ivy.Config{
+		iv := ivy.New(source, cache, ivy.NewGMProcessor(), &ivy.Config{
 			HTTPCache:     int64(c.Int("httpcache")),
 			IsDevelopment: false,
 		})
@@ -89,7 +89,7 @@ func main() {
 
 		a.GET("/:bucket/:params/*path", func(c *ace.C) {
 			start := stopwatch.Start()
-			fp.Get(c.Params.ByName("bucket"), c.Params.ByName("params"), c.Params.ByName("path"), c.Writer, c.Request)
+			iv.Get(c.Params.ByName("bucket"), c.Params.ByName("params"), c.Params.ByName("path"), c.Writer, c.Request)
 			watch := stopwatch.Stop(start)
 			log.Printf("[Ivy] %d %s %vms", c.Writer.Status(), c.Request.URL.String(), watch.Milliseconds())
 		})

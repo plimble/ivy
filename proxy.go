@@ -26,11 +26,9 @@ type Cache interface {
 	Flush(bucket string) error
 }
 
-//Ivy main struct of this package
-type Ivy struct {
-	Source Source
-	Cache  Cache
-	Config *Config
+//Processor interface for process image
+type Processor interface {
+	Process(params *params, filePath string, file *bytes.Buffer) (*bytes.Buffer, error)
 }
 
 //Config config for ivy
@@ -39,11 +37,19 @@ type Config struct {
 	IsDevelopment bool  //Enable dev mode, all cache will be disabled
 }
 
+//Ivy main struct of this package
+type Ivy struct {
+	Source    Source
+	Cache     Cache
+	Processor Processor
+	Config    *Config
+}
+
 //New ivy with config
 //source is the assets location
 //cache is the location where cache will be store, or set nil if disable cache
-func New(source Source, cache Cache, config *Config) *Ivy {
-	return &Ivy{source, cache, config}
+func New(source Source, cache Cache, processor Processor, config *Config) *Ivy {
+	return &Ivy{source, cache, processor, config}
 }
 
 //Get get file or image
@@ -121,7 +127,7 @@ func (iv *Ivy) loadFromSource(bucket, filePath string, params *params) (*bytes.B
 		return nil, err
 	}
 
-	img, err := process(params, iv.Source.GetFilePath(bucket, filePath), file)
+	img, err := iv.Processor.Process(params, iv.Source.GetFilePath(bucket, filePath), file)
 	if err != nil {
 		return nil, err
 	}

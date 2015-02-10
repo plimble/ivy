@@ -160,16 +160,16 @@ Resize width 100px aspect ratio
 	http://localhost:3000/bucket/r_100x0/test.jpg
 ```
 
-Crop top left image 200x200
+Crop image 200x200 with default gravity (NorthWest)
 
 ```
 	http://localhost:3000/bucket/c_200x200/test.jpg
 ```
 
-Crop with gravity NorthWest image 200x200
+Crop with gravity East image 200x200
 
 ```
-	http://localhost:3000/bucket/c_200x200,g_nw/test.jpg
+	http://localhost:3000/bucket/c_200x200,g_e/test.jpg
 ```
 
 Resize 400x400 then crop 200x200 and gravity center

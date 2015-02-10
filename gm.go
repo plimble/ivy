@@ -51,7 +51,7 @@ func (gm *GMProcessor) Process(params *params, filePath string, file *bytes.Buff
 	}
 
 	out := &bytes.Buffer{}
-	err := gmb.Process(file, out)
+	err := gmb.runCMD(file, out)
 
 	return out, err
 }
@@ -114,7 +114,7 @@ func (g *gmBuilder) Gravity(pos string) *gmBuilder {
 	return g
 }
 
-func (g *gmBuilder) Process(in io.Reader, out io.Writer) error {
+func (g *gmBuilder) runCMD(in io.Reader, out io.Writer) error {
 	g.args = append(g.args, "-", "-")
 	cmd := exec.Command("gm", g.args...)
 

@@ -1,4 +1,4 @@
-Ivy [![godoc badge](http://godoc.org/github.com/plimble/ivy?status.png)](http://godoc.org/github.com/plimble/ivy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/ivy?t=3)](http://gocover.io/github.com/plimble/ivy) [![Build Status](https://api.travis-ci.org/plimble/ivy.svg?branch=master&t=3)](https://travis-ci.org/plimble/ivy) [![Go Report Card](http://goreportcard.com/badge/plimble/ivy?t=3)](http:/goreportcard.com/report/plimble/ivy)
+Ivy [![godoc badge](http://godoc.org/github.com/plimble/ivy?status.png)](http://godoc.org/github.com/plimble/ivy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/ivy?t=4)](http://gocover.io/github.com/plimble/ivy) [![Build Status](https://api.travis-ci.org/plimble/ivy.svg?branch=master&t=4)](https://travis-ci.org/plimble/ivy) [![Go Report Card](http://goreportcard.com/badge/plimble/ivy?t=4)](http:/goreportcard.com/report/plimble/ivy)
 =========
 
 Assets & Image processing on the fly by GraphicsMagick
@@ -32,13 +32,14 @@ brew install graphicsmagick
 ```
 	source := ivy.NewFileSystemSource("/path/to/asset")
 	cache := ivy.NewFileSystemCache("/path/to/cache")
+	processor := ivy.NewGMProcessor()
 
 	config := &ivy.Config{
 		IsDevelopment: false,
 		HttpCache:     66000,
 	}
 
-	iv := ivy.New(source, cache, config)
+	iv := ivy.New(source, cache, processor, config)
 ```
 
 ##### AWS S3
@@ -46,13 +47,14 @@ brew install graphicsmagick
 ```
 	source := ivy.NewS3Source("accessKey", "secretKey")
 	cache := ivy.NewFileSystemCache("/path/to/cache")
+	processor := ivy.NewGMProcessor()
 
 	config := &ivy.Config{
 		IsDevelopment: false,
 		HttpCache:     66000,
 	}
 
-	iv := ivy.New(source, cache, config)
+	iv := ivy.New(source, cache, processor, config)
 ```
 
 ### Cache

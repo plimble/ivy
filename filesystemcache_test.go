@@ -66,6 +66,7 @@ func TestFileCacheLoadNotExist(t *testing.T) {
 func TestFileCacheFlush(t *testing.T) {
 	bucket := "bucket"
 	fs := NewFileSystemCache("testcache")
+	defer os.RemoveAll("testcache")
 
 	err := fs.Save(bucket, "test.txt", "", []byte("TESTCACHE"))
 	assert.NoError(t, err)
@@ -76,6 +77,6 @@ func TestFileCacheFlush(t *testing.T) {
 	err = fs.Flush(bucket)
 	assert.NoError(t, err)
 
-	_, err = os.Open(fs.root)
+	_, err = os.Open(path.Join(fs.root, bucket))
 	assert.True(t, os.IsNotExist(err))
 }

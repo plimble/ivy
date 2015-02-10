@@ -35,7 +35,7 @@ type Ivy struct {
 
 //Config config for ivy
 type Config struct {
-	HttpCache     int64 //Enable http cache in second
+	HTTPCache     int64 //Enable http cache in second
 	IsDevelopment bool  //Enable dev mode, all cache will be disabled
 }
 
@@ -46,13 +46,13 @@ func New(source Source, cache Cache, config *Config) *Ivy {
 	return &Ivy{source, cache, config}
 }
 
-//Get
+//Get get file or image
 //if content type is image type and param not nil, process and return image
 //if content type is image type and param nil, return raw image
 //if content type is not image type, return raw file
 //if cache enable, image type will cache. Next time return cache file
 //if cache disable image type will not cahce, process and return image every time
-//if HttpCache is enable in config, return 304 status on next time
+//if HTTPCache is enable in config, return 304 status on next time
 func (iv *Ivy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r *http.Request) {
 	if iv.isNotModify(r) {
 		iv.writeNotModify(w, path)
@@ -95,7 +95,7 @@ func (iv *Ivy) FlushCache(bucket string) error {
 }
 
 func (iv *Ivy) isNotModify(r *http.Request) bool {
-	if iv.Config.HttpCache > 0 && !iv.Config.IsDevelopment && r.Header.Get("If-Modified-Since") != "" {
+	if iv.Config.HTTPCache > 0 && !iv.Config.IsDevelopment && r.Header.Get("If-Modified-Since") != "" {
 		return true
 	}
 
@@ -153,9 +153,9 @@ func (iv *Ivy) setHeader(w http.ResponseWriter, filePath string) {
 	w.Header().Add("Vary", "Accept-Encoding")
 	w.Header().Add("Last-Modified", "Tue, 01 Jan 2008 00:00:00 GMT")
 
-	if iv.Config.HttpCache > 0 && !iv.Config.IsDevelopment {
-		w.Header().Add("Cache-Control", "public; max-age="+strconv.FormatInt(iv.Config.HttpCache, 10))
-		w.Header().Add("Expires", time.Now().Add(time.Second*time.Duration(iv.Config.HttpCache)).Format("Mon, _2 Jan 2006 15:04:05 MST"))
+	if iv.Config.HTTPCache > 0 && !iv.Config.IsDevelopment {
+		w.Header().Add("Cache-Control", "public; max-age="+strconv.FormatInt(iv.Config.HTTPCache, 10))
+		w.Header().Add("Expires", time.Now().Add(time.Second*time.Duration(iv.Config.HTTPCache)).Format("Mon, _2 Jan 2006 15:04:05 MST"))
 	}
 }
 

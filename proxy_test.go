@@ -16,7 +16,7 @@ func setup() *Ivy {
 
 	config := &Config{
 		IsDevelopment: false,
-		HttpCache:     66000,
+		HTTPCache:     66000,
 	}
 
 	iv := New(source, cache, config)

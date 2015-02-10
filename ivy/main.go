@@ -81,7 +81,7 @@ func main() {
 		}
 
 		fp := ivy.New(source, cache, &ivy.Config{
-			HttpCache:     int64(c.Int("httpcache")),
+			HTTPCache:     int64(c.Int("httpcache")),
 			IsDevelopment: false,
 		})
 

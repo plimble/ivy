@@ -13,8 +13,8 @@ deploy:
     - script:
         name: go build
         code: |
-          cd server
-          go build -o fileproxy
+          cd ivy
+          go build -o ivy
     - add-to-known_hosts:
         hostname: $DEPLOY_IP
     - mktemp:
@@ -30,8 +30,8 @@ deploy:
           pwd
           ls -la
           cd server
-          ssh -i $PRIVATEKEY_PATH root@$DEPLOY_IP "supervisorctl stop fileproxy"
-          scp -i $PRIVATEKEY_PATH fileproxy root@$DEPLOY_IP:/var/www
+          ssh -i $PRIVATEKEY_PATH root@$DEPLOY_IP "supervisorctl stop ivy"
+          scp -i $PRIVATEKEY_PATH ivy root@$DEPLOY_IP:/var/www
     - script:
         name: restart app
-        code: ssh -i $PRIVATEKEY_PATH root@$DEPLOY_IP "supervisorctl restart fileproxy"
+        code: ssh -i $PRIVATEKEY_PATH root@$DEPLOY_IP "supervisorctl restart ivy"

@@ -1,4 +1,4 @@
-package fileproxy_test
+package ivy
 
 import (
 	"bytes"

@@ -4,7 +4,7 @@ import (
 	"github.com/bradhe/stopwatch"
 	"github.com/codegangsta/cli"
 	"github.com/plimble/ace"
-	"github.com/plimble/fileproxy"
+	"github.com/plimble/ivy"
 	"log"
 	"os"
 	"runtime"
@@ -13,7 +13,7 @@ import (
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	app := cli.NewApp()
-	app.Name = "fileproxy"
+	app.Name = "Ivy"
 	app.Usage = "make an explosive entrance"
 	app.Author = "Witoo Harianto"
 	app.Email = "witooh@icloud.com"
@@ -64,23 +64,23 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) {
-		var source fileproxy.Source
+		var source ivy.Source
 		switch c.String("source") {
 		case "s3":
-			source = fileproxy.NewS3Source(c.String("s3key"), c.String("s3secret"))
+			source = ivy.NewS3Source(c.String("s3key"), c.String("s3secret"))
 		default:
-			source = fileproxy.NewFileSystemSource(c.String("sourceroot"))
+			source = ivy.NewFileSystemSource(c.String("sourceroot"))
 		}
 
-		var cache fileproxy.Cache
+		var cache ivy.Cache
 		switch c.String("cache") {
 		case "file":
-			cache = fileproxy.NewFileSystemCache("cacheroot")
+			cache = ivy.NewFileSystemCache("cacheroot")
 		default:
 			cache = nil
 		}
 
-		fp := fileproxy.New(source, cache, &fileproxy.Config{
+		fp := ivy.New(source, cache, &ivy.Config{
 			HttpCache:     int64(c.Int("httpcache")),
 			IsDevelopment: false,
 		})
@@ -91,11 +91,11 @@ func main() {
 			start := stopwatch.Start()
 			fp.Get(c.Params.ByName("bucket"), c.Params.ByName("params"), c.Params.ByName("path"), c.Writer, c.Request)
 			watch := stopwatch.Stop(start)
-			log.Printf("[fileproxy] %d %s %vms", c.Writer.Status(), c.Request.URL.String(), watch.Milliseconds())
+			log.Printf("[Ivy] %d %s %vms", c.Writer.Status(), c.Request.URL.String(), watch.Milliseconds())
 		})
 
 		url := c.String("url")
-		log.Println("[fileproxy] Start server on " + url)
+		log.Println("[Ivy] Start server on " + url)
 		a.Run(url)
 	}
 

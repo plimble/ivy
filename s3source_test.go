@@ -1,6 +1,6 @@
 // +build integration
 
-package fileproxy
+package ivy
 
 import (
 	"github.com/stretchr/testify/assert"

@@ -1,4 +1,4 @@
-package fileproxy
+package ivy
 
 import (
 	"fmt"

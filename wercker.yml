@@ -29,7 +29,7 @@ deploy:
         code: |
           pwd
           ls -la
-          cd server
+          cd ivy
           ssh -i $PRIVATEKEY_PATH root@$DEPLOY_IP "supervisorctl stop ivy"
           scp -i $PRIVATEKEY_PATH ivy root@$DEPLOY_IP:/var/www
     - script:

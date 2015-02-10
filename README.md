@@ -35,8 +35,8 @@ brew install graphicsmagick
 	processor := ivy.NewGMProcessor()
 
 	config := &ivy.Config{
-		IsDevelopment: false,
-		HTTPCache:     66000,
+		IsDevelopment: false, //If false, Enable cache
+		HTTPCache:     66000, //If > 0, Enable HTTP Cache
 	}
 
 	iv := ivy.New(source, cache, processor, config)
@@ -50,8 +50,8 @@ brew install graphicsmagick
 	processor := ivy.NewGMProcessor()
 
 	config := &ivy.Config{
-		IsDevelopment: false,
-		HTTPCache:     66000,
+		IsDevelopment: false, //If false, Enable cache
+		HTTPCache:     66000, //If > 0, Enable HTTP Cache
 	}
 
 	iv := ivy.New(source, cache, processor, config)
@@ -89,7 +89,7 @@ GLOBAL OPTIONS:
    --s3secret 		       if source is s3, AWS S3 secret key [$AWS_SECRET_KEY]
    --sourceroot 	       if source is file, specific root path of image
    --cacheroot 		       if cache is file, specific root path of cache
-   --help, -h		         show help
+   --help, -h		       show help
    --version, -v	       print the version
 ```
 

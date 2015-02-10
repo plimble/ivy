@@ -1,4 +1,4 @@
-Ivy [![godoc badge](http://godoc.org/github.com/plimble/ivy?status.png)](http://godoc.org/github.com/plimble/ivy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/ivy?t=7)](http://gocover.io/github.com/plimble/ivy) [![Build Status](https://api.travis-ci.org/plimble/ivy.svg?branch=master&t=7)](https://travis-ci.org/plimble/ivy) [![Go Report Card](http://goreportcard.com/badge/plimble/ivy?t=7)](http:/goreportcard.com/report/plimble/ivy)
+Ivy [![godoc badge](http://godoc.org/github.com/plimble/ivy?status.png)](http://godoc.org/github.com/plimble/ivy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/ivy?t=8)](http://gocover.io/github.com/plimble/ivy) [![Build Status](https://api.travis-ci.org/plimble/ivy.svg?branch=master&t=8)](https://travis-ci.org/plimble/ivy) [![Go Report Card](http://goreportcard.com/badge/plimble/ivy?t=8)](http:/goreportcard.com/report/plimble/ivy)
 =========
 
 Assets & Image processing on the fly by GraphicsMagick
@@ -89,7 +89,32 @@ For more config
 	a.Run(":3000")
 ```
 
-You can run as middleware also
+###Customs
+
+##### Custom Source
+```go
+	type Source interface {
+		Load(bucket string, filename string) (*bytes.Buffer, error)
+		GetFilePath(bucket string, filename string) string
+	}
+```
+
+##### Custom Cache
+```go
+	type Cache interface {
+		Save(bucket, filename string, params *Params, file []byte) error
+		Load(bucket, filename string, params *Params) (*bytes.Buffer, error)
+		Delete(bucket, filename string, params *Params) error
+		Flush(bucket string) error
+	}
+```
+
+##### Custom Processor
+```go
+	type Processor interface {
+		Process(params *Params, path string, file *bytes.Buffer) (*bytes.Buffer, error)
+	}
+```
 
 ### Example Request Image
 Get image with original size or non image

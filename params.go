@@ -108,7 +108,7 @@ func setParams(params *Params, key, value string) error {
 			return fmt.Errorf("could not parse value for parameter: %s", key)
 		}
 		if params.Quality < 0 || params.Quality > 100 {
-			return fmt.Errorf("value %d must be > 0 & <= 100: %s", value, key)
+			return fmt.Errorf("value %s must be > 0 & <= 100: %s", value, key)
 		}
 	default:
 		return fmt.Errorf("invalid parameter: %s_%s", key, value)
@@ -135,7 +135,7 @@ func getParamDimentsion(key, value string, min int) (int, int, error) {
 		return 0, 0, fmt.Errorf("could not parse value for parameter: %s", key)
 	}
 	if width < min {
-		return 0, 0, fmt.Errorf("value %d must be > 0: %s", value, key)
+		return 0, 0, fmt.Errorf("value %s must be > 0: %s", value, key)
 	}
 
 	height, err := strconv.Atoi(values[1])
@@ -143,7 +143,7 @@ func getParamDimentsion(key, value string, min int) (int, int, error) {
 		return 0, 0, fmt.Errorf("could not parse value for parameter: %s", key)
 	}
 	if height < min {
-		return 0, 0, fmt.Errorf("value %d must be > 0: %s", value, key)
+		return 0, 0, fmt.Errorf("value %s must be > 0: %s", value, key)
 	}
 
 	return width, height, nil

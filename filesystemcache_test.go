@@ -73,7 +73,7 @@ func TestFileCacheFlush(t *testing.T) {
 	err = fs.Save(bucket, "test2.txt", "", []byte("TESTCACHE"))
 	assert.NoError(t, err)
 
-	err = fs.Flush()
+	err = fs.Flush(bucket)
 	assert.NoError(t, err)
 
 	_, err = os.Open(fs.root)

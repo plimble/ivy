@@ -1,4 +1,4 @@
-Ivy [![godoc badge](http://godoc.org/github.com/plimble/ivy?status.png)](http://godoc.org/github.com/plimble/ivy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/ivy?t=8)](http://gocover.io/github.com/plimble/ivy) [![Build Status](https://api.travis-ci.org/plimble/ivy.svg?branch=master&t=8)](https://travis-ci.org/plimble/ivy) [![Go Report Card](http://goreportcard.com/badge/plimble/ivy?t=8)](http:/goreportcard.com/report/plimble/ivy)
+Ivy [![godoc badge](http://godoc.org/github.com/plimble/ivy?status.png)](http://godoc.org/github.com/plimble/ivy)   [![gocover badge](http://gocover.io/_badge/github.com/plimble/ivy?t=9)](http://gocover.io/github.com/plimble/ivy) [![Build Status](https://api.travis-ci.org/plimble/ivy.svg?branch=master&t=9)](https://travis-ci.org/plimble/ivy) [![Go Report Card](http://goreportcard.com/badge/plimble/ivy?t=9)](http:/goreportcard.com/report/plimble/ivy)
 =========
 
 Assets & Image processing on the fly by GraphicsMagick
@@ -64,12 +64,39 @@ You can use file system for caching or set `nil` for CDN like Cloudfront or disa
 
 ### Server
 
-You can run built-in server or implement in your server
+You can run built-in server (ivy folder) or implement in your server
 
 For more config
 
-```
-./server -h
+```shell
+./ivy -h
+
+NAME:
+   Ivy - make an explosive entrance
+
+USAGE:
+   Ivy [global options] command [command options] [arguments...]
+
+VERSION:
+   1.0
+
+AUTHOR:
+  Witoo Harianto - <witooh@icloud.com>
+
+COMMANDS:
+   help, h	Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --url, -u ":4900"	server port
+   --httpcache, -t "0"	if cache enable this is http cache in second
+   --cache, -c 		enable cache, specific  eg, file
+   --source, -s "file"	source of image eg, file, s3
+   --s3key 		if source is s3, AWS S3 access key [$AWS_ACCESS_KEY]
+   --s3secret 		if source is s3, AWS S3 secret key [$AWS_SECRET_KEY]
+   --sourceroot 	if source is file, specific root path of image
+   --cacheroot 		if cache is file, specific root path of cache
+   --help, -h		show help
+   --version, -v	print the version
 ```
 
 ##### Ace Example

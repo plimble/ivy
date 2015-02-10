@@ -18,7 +18,7 @@ sudo apt-get install graphicsmagick
 ```
 
 OSX
-```
+```shell
 brew install graphicsmagick
 ```
 
@@ -29,7 +29,7 @@ brew install graphicsmagick
 
 ##### File System
 
-```
+```go
 	source := ivy.NewFileSystemSource("/path/to/asset")
 	cache := ivy.NewFileSystemCache("/path/to/cache")
 	processor := ivy.NewGMProcessor()
@@ -44,7 +44,7 @@ brew install graphicsmagick
 
 ##### AWS S3
 
-```
+```go
 	source := ivy.NewS3Source("accessKey", "secretKey")
 	cache := ivy.NewFileSystemCache("/path/to/cache")
 	processor := ivy.NewGMProcessor()
@@ -95,7 +95,7 @@ GLOBAL OPTIONS:
 
 ##### [Ace](https://github.com/plimble/ace) Example
 
-```
+```go
 	a := ace.New()
 	a.GET("/:bucket/:params/*path", func(c *ace.C) {
 		iv.Get(
@@ -138,51 +138,72 @@ GLOBAL OPTIONS:
 ```
 
 ### Example Request Image
+
 Get image with original size or non image
 
+```url
+http://localhost:3000/bucket/_/test.jpg
+http://localhost:3000/bucket/0/test.jpg
 ```
-	http://localhost:3000/bucket/_/test.jpg
-```
+Original image | After image
+--- | ---
+![before](http://postto.me/18/4cm.jpg) | ![after](http://postto.me/18/4cm.jpg)
 
-```
-	http://localhost:3000/bucket/0/test.jpg
-```
 
-Resize 100x100
+#####Resize 100x100
+```
+http://localhost:3000/bucket/r_100x100/test.jpg
+```
+Original image | After image
+--- | ---
+![before](http://postto.me/18/4cm.jpg) | ![after](http://postto.me/18/4cv.jpg)
 
-```
-	http://localhost:3000/bucket/r_100x100/test.jpg
-```
 
-Resize width 100px aspect ratio
+#####Resize width 100px aspect ratio
+```url
+http://localhost:3000/bucket/r_100x0/test.jpg
+```
+Original image | After image
+--- | ---
+![before](http://postto.me/18/4cm.jpg) | ![after](http://postto.me/18/4cn.jpg)
 
-```
-	http://localhost:3000/bucket/r_100x0/test.jpg
-```
 
-Crop image 200x200 with default gravity (NorthWest)
+#####Crop image 200x200 with default gravity (NorthWest)
+```url
+http://localhost:3000/bucket/c_200x200/test.jpg
+```
+Original image | After image
+--- | ---
+![before](http://postto.me/18/4cm.jpg) | ![after](http://postto.me/18/3kc.jpg)
 
-```
-	http://localhost:3000/bucket/c_200x200/test.jpg
-```
 
-Crop with gravity East image 200x200
+#####Crop with gravity East image 200x200
+```url
+http://localhost:3000/bucket/c_200x200,g_e/test.jpg
+```
+Original image | After image
+--- | ---
+![before](http://postto.me/18/4cm.jpg) | ![after](http://postto.me/18/3k4.jpg)
 
-```
-	http://localhost:3000/bucket/c_200x200,g_e/test.jpg
-```
 
-Resize 400x400 then crop 200x200 and gravity center
+#####Resize 400x400 then crop 200x200 and gravity center
+```url
+http://localhost:3000/bucket/r_400x400,c_200x200,g_c/test.jpg
+```
+Original image | After image
+--- | ---
+![before](http://postto.me/18/4cm.jpg) | ![after](http://postto.me/18/3kd.jpg)
 
-```
-	http://localhost:3000/bucket/r_400x400,c_200x200,g_c/test.jpg
-```
 
-Quality 100
+#####Quality 100
+```url
+http://localhost:3000/bucket/q_100/test.jpg
+```
+Original image | After image
+--- | ---
+![before](http://postto.me/18/4cm.jpg) | ![after](http://postto.me/18/3k5.jpg)
 
-```
-	http://localhost:3000/bucket/q_100/test.jpg
-```
+
 
 ###Params Table
 

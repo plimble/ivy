@@ -36,7 +36,7 @@ brew install graphicsmagick
 
 	config := &ivy.Config{
 		IsDevelopment: false,
-		HttpCache:     66000,
+		HTTPCache:     66000,
 	}
 
 	iv := ivy.New(source, cache, processor, config)
@@ -51,7 +51,7 @@ brew install graphicsmagick
 
 	config := &ivy.Config{
 		IsDevelopment: false,
-		HttpCache:     66000,
+		HTTPCache:     66000,
 	}
 
 	iv := ivy.New(source, cache, processor, config)

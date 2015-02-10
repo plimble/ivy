@@ -4,7 +4,7 @@ Ivy [![godoc badge](http://godoc.org/github.com/plimble/ivy?status.png)](http://
 Assets & Image processing on the fly by GraphicsMagick
 
 ### Installation
-`go get -u github.com/plimble/ace`
+`go get -u github.com/plimble/ivy`
 
 #####GraphicsMagick
 

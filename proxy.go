@@ -23,7 +23,7 @@ type Cache interface {
 	Flush() error
 }
 
-type FileProxy struct {
+type Ivy struct {
 	Source Source
 	Cache  Cache
 	Config *Config
@@ -34,11 +34,11 @@ type Config struct {
 	IsDevelopment bool
 }
 
-func New(source Source, cache Cache, config *Config) *FileProxy {
-	return &FileProxy{source, cache, config}
+func New(source Source, cache Cache, config *Config) *Ivy {
+	return &Ivy{source, cache, config}
 }
 
-func (f *FileProxy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r *http.Request) {
+func (f *Ivy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r *http.Request) {
 	if f.isNotModify(r) {
 		f.writeNotModify(w, path)
 		return
@@ -66,7 +66,7 @@ func (f *FileProxy) Get(bucket, paramsStr, path string, w http.ResponseWriter, r
 	}
 }
 
-func (f *FileProxy) isNotModify(r *http.Request) bool {
+func (f *Ivy) isNotModify(r *http.Request) bool {
 	if f.Config.HttpCache > 0 && !f.Config.IsDevelopment && r.Header.Get("If-Modified-Since") != "" {
 		return true
 	}
@@ -74,7 +74,7 @@ func (f *FileProxy) isNotModify(r *http.Request) bool {
 	return false
 }
 
-func (f *FileProxy) loadFromCache(bucket, filePath string, params *Params) (*bytes.Buffer, error) {
+func (f *Ivy) loadFromCache(bucket, filePath string, params *Params) (*bytes.Buffer, error) {
 	if f.Config.IsDevelopment || f.Cache == nil {
 		return nil, errors.New("no cache")
 	}
@@ -87,7 +87,7 @@ func (f *FileProxy) loadFromCache(bucket, filePath string, params *Params) (*byt
 	return file, nil
 }
 
-func (f *FileProxy) loadFromSource(bucket, filePath string, params *Params) (*bytes.Buffer, error) {
+func (f *Ivy) loadFromSource(bucket, filePath string, params *Params) (*bytes.Buffer, error) {
 	file, err := f.Source.Load(bucket, filePath)
 	if err != nil {
 		return nil, err
@@ -105,11 +105,11 @@ func (f *FileProxy) loadFromSource(bucket, filePath string, params *Params) (*by
 	return img, nil
 }
 
-func (f *FileProxy) FlushCache() error {
+func (f *Ivy) FlushCache() error {
 	return f.Cache.Flush()
 }
 
-func (f *FileProxy) getContentType(filePath string) string {
+func (f *Ivy) getContentType(filePath string) string {
 	switch filepath.Ext(filePath) {
 	case ".jpg":
 		return "image/jpeg"
@@ -122,7 +122,7 @@ func (f *FileProxy) getContentType(filePath string) string {
 	return "application/octet-stream"
 }
 
-func (f *FileProxy) setHeader(w http.ResponseWriter, filePath string) {
+func (f *Ivy) setHeader(w http.ResponseWriter, filePath string) {
 	w.Header().Add("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Content-Type", f.getContentType(filePath))
 	w.Header().Add("Connection", "keep-alive")
@@ -135,24 +135,24 @@ func (f *FileProxy) setHeader(w http.ResponseWriter, filePath string) {
 	}
 }
 
-func (f *FileProxy) writeSuccess(w http.ResponseWriter, filePath string, file *bytes.Buffer) {
+func (f *Ivy) writeSuccess(w http.ResponseWriter, filePath string, file *bytes.Buffer) {
 	f.setHeader(w, filePath)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(file.Bytes())
 }
 
-func (f *FileProxy) writeError(w http.ResponseWriter, err error) {
+func (f *Ivy) writeError(w http.ResponseWriter, err error) {
 	w.WriteHeader(500)
 	w.Write([]byte(err.Error()))
 }
 
-func (f *FileProxy) writeNotFoud(w http.ResponseWriter) {
+func (f *Ivy) writeNotFoud(w http.ResponseWriter) {
 	w.WriteHeader(404)
 	w.Write([]byte("not found"))
 }
 
-func (f *FileProxy) writeNotModify(w http.ResponseWriter, filePath string) {
+func (f *Ivy) writeNotModify(w http.ResponseWriter, filePath string) {
 	f.setHeader(w, filePath)
 	w.WriteHeader(304)
 	w.Write(nil)

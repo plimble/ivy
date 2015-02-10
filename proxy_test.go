@@ -1,8 +1,8 @@
-package ivy
+package ivy_test
 
 import (
 	"bytes"
-	"github.com/plimble/fileproxy"
+	"github.com/plimble/ivy"
 	"github.com/stretchr/testify/assert"
 	"image"
 	"image/png"
@@ -14,15 +14,15 @@ import (
 	"testing"
 )
 
-func setup() *fileproxy.FileProxy {
-	fsource := fileproxy.NewFileSystemSource("sourcefolder")
-	csource := fileproxy.NewFileSystemCache("cachefolder")
-	fconfig := &fileproxy.Config{
+func setup() *ivy.Ivy {
+	fsource := ivy.NewFileSystemSource("sourcefolder")
+	csource := ivy.NewFileSystemCache("cachefolder")
+	fconfig := &ivy.Config{
 		IsDevelopment: false,
 		HttpCache:     66000,
 	}
 
-	fp := fileproxy.New(
+	fp := ivy.New(
 		fsource,
 		csource,
 		fconfig,

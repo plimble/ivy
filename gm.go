@@ -10,40 +10,40 @@ import (
 	"time"
 )
 
-type GMBuilder struct {
+type gmBuilder struct {
 	args []string
 }
 
-func NewGMBuilder() *GMBuilder {
-	return &GMBuilder{[]string{"convert"}}
+func newGMBuilder() *gmBuilder {
+	return &gmBuilder{[]string{"convert"}}
 }
 
-func (g *GMBuilder) Strip() *GMBuilder {
+func (g *gmBuilder) Strip() *gmBuilder {
 	g.args = append(g.args, "-strip")
 	return g
 }
 
-func (g *GMBuilder) Quality(qty int) *GMBuilder {
+func (g *gmBuilder) Quality(qty int) *gmBuilder {
 	g.args = append(g.args, "-quality", strconv.Itoa(qty))
 	return g
 }
 
-func (g *GMBuilder) Resize(width, height int, option string) *GMBuilder {
+func (g *gmBuilder) Resize(width, height int, option string) *gmBuilder {
 	g.args = append(g.args, "-resize", strconv.Itoa(width)+"x"+strconv.Itoa(height)+option)
 	return g
 }
 
-func (g *GMBuilder) Crop(width, height int) *GMBuilder {
+func (g *gmBuilder) Crop(width, height int) *gmBuilder {
 	g.args = append(g.args, "-crop", strconv.Itoa(width)+"x"+strconv.Itoa(height)+"+0+0")
 	return g
 }
 
-func (g *GMBuilder) Gravity(pos string) *GMBuilder {
+func (g *gmBuilder) Gravity(pos string) *gmBuilder {
 	g.args = append(g.args, "-gravity", pos)
 	return g
 }
 
-func (g *GMBuilder) Process(in io.Reader, out io.Writer) error {
+func (g *gmBuilder) Process(in io.Reader, out io.Writer) error {
 	g.args = append(g.args, "-", "-")
 	cmd := exec.Command("gm", g.args...)
 
@@ -75,7 +75,7 @@ func (g *GMBuilder) Process(in io.Reader, out io.Writer) error {
 	return nil
 }
 
-func (g *GMBuilder) killCmd(cmd *exec.Cmd) error {
+func (g *gmBuilder) killCmd(cmd *exec.Cmd) error {
 	if err := cmd.Process.Kill(); err != nil {
 		return errs.NewErrors(fmt.Sprintf("Failed to kill command: %v", err))
 	}

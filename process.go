@@ -9,7 +9,7 @@ func process(params *params, filePath string, file *bytes.Buffer) (*bytes.Buffer
 		return file, nil
 	}
 
-	gm := NewGMBuilder()
+	gm := newGMBuilder()
 	gm.Strip()
 
 	if params.enableResize {

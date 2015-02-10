@@ -6,7 +6,7 @@ import (
 	"path"
 )
 
-//FileSystemSource
+//FileSystemSource is file system source
 type FileSystemSource struct {
 	root string
 }

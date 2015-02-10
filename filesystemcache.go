@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-//FileSystemCache
+//FileSystemCache is file system cache
 type FileSystemCache struct {
 	root string
 }

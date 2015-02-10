@@ -18,6 +18,18 @@ func TestGMProcess(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, img)
 	assert.True(t, img.Len() > 0)
+
+	params, _ = ParseParams("r_100x0,c_50x50,g_c,q_50")
+	img, err = gm.Process(params, "text.png", buffer)
+	assert.NoError(t, err)
+	assert.NotNil(t, img)
+	assert.True(t, img.Len() > 0)
+
+	params, _ = ParseParams("r_0x100,c_50x50,g_c,q_50")
+	img, err = gm.Process(params, "text.png", buffer)
+	assert.NoError(t, err)
+	assert.NotNil(t, img)
+	assert.True(t, img.Len() > 0)
 }
 
 func TestGMGetGravity(t *testing.T) {

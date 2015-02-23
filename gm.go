@@ -3,7 +3,7 @@ package ivy
 import (
 	"bytes"
 	"fmt"
-	"github.com/plimble/errs"
+	"github.com/plimble/utils/errors2"
 	"io"
 	"os/exec"
 	"strconv"
@@ -136,10 +136,10 @@ func (g *gmBuilder) runCMD(in io.Reader, out io.Writer) error {
 			return err
 		}
 		<-cmdDone
-		return errs.NewErrors("Command timed out")
+		return errors2.NewInternal("Command timed out")
 	case err := <-cmdDone:
 		if err != nil {
-			return errs.NewErrors(stderr.String())
+			return errors2.NewInternal(stderr.String())
 		}
 	}
 
@@ -148,7 +148,7 @@ func (g *gmBuilder) runCMD(in io.Reader, out io.Writer) error {
 
 func (g *gmBuilder) killCmd(cmd *exec.Cmd) error {
 	if err := cmd.Process.Kill(); err != nil {
-		return errs.NewErrors(fmt.Sprintf("Failed to kill command: %v", err))
+		return errors2.NewInternal(fmt.Sprintf("Failed to kill command: %v", err))
 	}
 
 	return nil

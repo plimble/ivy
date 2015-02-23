@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/awslabs/aws-sdk-go/aws"
 	"github.com/awslabs/aws-sdk-go/gen/s3"
-	"github.com/plimble/errs"
+	"github.com/plimble/utils/errors2"
 	"strings"
 )
 
@@ -34,7 +34,7 @@ func (fs *S3Source) Load(bucket, filename string) (*bytes.Buffer, error) {
 
 	if err != nil {
 		if err.Error() == "Access Denied" || err.Error() == "The specified key does not exist." {
-			return nil, errs.NewNotFound("not found")
+			return nil, errors2.NewNotFound("not found")
 		}
 
 		return nil, err

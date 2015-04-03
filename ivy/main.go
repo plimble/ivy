@@ -6,6 +6,7 @@ import (
 	"github.com/plimble/ace"
 	"github.com/plimble/ivy"
 	"log"
+	"net/url"
 	"os"
 	"runtime"
 )
@@ -89,7 +90,9 @@ func main() {
 
 		a.GET("/:bucket/:params/*path", func(c *ace.C) {
 			start := stopwatch.Start()
-			iv.Get(c.Params.ByName("bucket"), c.Params.ByName("params"), c.Params.ByName("path"), c.Writer, c.Request)
+			bucket, _ := url.QueryUnescape(c.Params.ByName("bucket"))
+			params, _ := url.QueryUnescape(c.Params.ByName("params"))
+			iv.Get(bucket, params, c.Params.ByName("path"), c.Writer, c.Request)
 			watch := stopwatch.Stop(start)
 			log.Printf("[Ivy] %d %s %vms", c.Writer.Status(), c.Request.URL.String(), watch.Milliseconds())
 		})

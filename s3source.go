@@ -3,7 +3,7 @@ package ivy
 import (
 	"bytes"
 	"github.com/awslabs/aws-sdk-go/aws"
-	"github.com/awslabs/aws-sdk-go/gen/s3"
+	"github.com/awslabs/aws-sdk-go/service/s3"
 	"github.com/plimble/utils/errors2"
 	"strings"
 )
@@ -15,8 +15,10 @@ type S3Source struct {
 
 //NewS3Source create s3 source with access key and secret key
 func NewS3Source(accessKey, secretKey string) *S3Source {
-	creds := aws.Creds(accessKey, secretKey, "")
-	cli := s3.New(creds, "ap-southeast-1", nil)
+	cli := s3.New(&aws.Config{
+		Credentials: aws.Creds(accessKey, secretKey, ""),
+		Region:      "ap-southeast-1",
+	})
 
 	return &S3Source{cli}
 }
@@ -27,7 +29,7 @@ func (fs *S3Source) Load(bucket, filename string) (*bytes.Buffer, error) {
 		filename = filename[1:]
 	}
 
-	res, err := fs.cli.GetObject(&s3.GetObjectRequest{
+	res, err := fs.cli.GetObject(&s3.GetObjectInput{
 		Bucket: &bucket,
 		Key:    &filename,
 	})

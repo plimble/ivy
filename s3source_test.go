@@ -14,16 +14,16 @@ var (
 )
 
 func TestS3SourceLoad(t *testing.T) {
-	bucket := "plimble"
+	bucket := "ivyplimble"
 	fs := NewS3Source(accessKey, secretKey)
 
-	reader, err := fs.Load(bucket, "dashobard-ui-5.png")
+	reader, err := fs.Load(bucket, "ไทย/ไทย.jpg")
 	assert.NotNil(t, reader)
 	assert.NoError(t, err)
 }
 
 func TestS3SourceLoadNotExist(t *testing.T) {
-	bucket := "plimble"
+	bucket := "ivyplimble"
 	fs := NewS3Source(accessKey, secretKey)
 
 	reader, err := fs.Load(bucket, "test/a123/v1/test2.jpg")

@@ -90,9 +90,8 @@ func main() {
 
 		a.GET("/:bucket/:params/*path", func(c *ace.C) {
 			start := stopwatch.Start()
-			bucket, _ := url.QueryUnescape(c.Params.ByName("bucket"))
 			params, _ := url.QueryUnescape(c.Params.ByName("params"))
-			iv.Get(bucket, params, c.Params.ByName("path"), c.Writer, c.Request)
+			iv.Get(c.Params.ByName("bucket"), params, c.Params.ByName("path"), c.Writer, c.Request)
 			watch := stopwatch.Stop(start)
 			log.Printf("[Ivy] %d %s %vms", c.Writer.Status(), c.Request.URL.String(), watch.Milliseconds())
 		})

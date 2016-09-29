@@ -1,0 +1,206 @@
+hash: 4f1f189ea1668e96dee3f5d1268c7532b3c42c1b96fde53f0cfd2477effc7760
+updated: 2016-09-28T21:20:00.323550762+07:00
+imports:
+- name: github.com/ajg/form
+  version: 523a5da1a92f01b01f840b61689c0340a0243532
+- name: github.com/aws/aws-sdk-go
+  version: 87a2cff6c2601f69429f336067d1deb7f713d1c6
+  subpackages:
+  - aws
+  - aws/awserr
+  - aws/awsutil
+  - aws/client
+  - aws/client/metadata
+  - aws/corehandlers
+  - aws/credentials
+  - aws/credentials/ec2rolecreds
+  - aws/credentials/endpointcreds
+  - aws/credentials/stscreds
+  - aws/defaults
+  - aws/ec2metadata
+  - aws/request
+  - aws/session
+  - aws/signer/v4
+  - private/endpoints
+  - private/protocol
+  - private/protocol/query
+  - private/protocol/query/queryutil
+  - private/protocol/rest
+  - private/protocol/restxml
+  - private/protocol/xml/xmlutil
+  - private/waiter
+  - service/s3
+  - service/s3/s3iface
+  - service/s3/s3manager
+  - service/sts
+- name: github.com/davecgh/go-spew
+  version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
+  subpackages:
+  - spew
+- name: github.com/fatih/structs
+  version: dc3312cb1a4513a366c4c9e622ad55c32df12ed3
+- name: github.com/gavv/gojsondiff
+  version: 36046c6e558e7f854ebd3fd97d1e9812ebe8709b
+  subpackages:
+  - formatter
+- name: github.com/gavv/httpexpect
+  version: 445f10d0ea3df01f78f350cbb01dd4a360d56d93
+- name: github.com/gavv/monotime
+  version: 259cd7b345f5aa080eff16f21d7866ef7dea9528
+- name: github.com/go-ini/ini
+  version: 6e4869b434bd001f6983749881c7ead3545887d8
+- name: github.com/google/go-github
+  version: 94a3cd9f531888fe4a03487276c0adb887428e77
+  subpackages:
+  - github
+- name: github.com/google/go-querystring
+  version: 9235644dd9e52eeae6fa48efd539fdc351a0af53
+  subpackages:
+  - query
+- name: github.com/gorilla/websocket
+  version: 2d1e4548da234d9cb742cc3628556fef86aafbac
+- name: github.com/h2non/bimg
+  version: 45e4ce45fd138eccd91760d527db901f35f8d000
+- name: github.com/hashicorp/go-version
+  version: deeb027c13a95d56c7585df3fe29207208c6706e
+- name: github.com/imdario/mergo
+  version: 50d4dbd4eb0e84778abe37cefef140271d96fade
+- name: github.com/imkira/go-interpol
+  version: 5accad8134979a6ac504d456a6c7f1c53da237ca
+- name: github.com/iris-contrib/formBinder
+  version: 32009bbc76eda475a6d1eb24787d1fdcdaf80e71
+- name: github.com/iris-contrib/letsencrypt
+  version: 2a9ed749d24d8d2a8ece891b7b6242f0b3192d62
+- name: github.com/iris-contrib/websocket
+  version: 5822d5825abd388d92ecdf42024dc2ad1a5ce1ba
+- name: github.com/jmespath/go-jmespath
+  version: bd40a432e4c76585ef6b72d3fd96fb9b6dc7b68d
+- name: github.com/kardianos/osext
+  version: c2c54e542fb797ad986b31721e1baedf214ca413
+- name: github.com/kardianos/service
+  version: 7a88211485df5d3da6ec68f4f8a5ff9bec297327
+- name: github.com/kataras/go-errors
+  version: 0f977b82cc78d5d31bb75fb6f903ad9e852c8bbd
+- name: github.com/kataras/go-fs
+  version: 4aa4a72b7801e6a9486568dfd21d812354d27899
+- name: github.com/kataras/go-options
+  version: 23b556c1b935c594ec6d71ff81ead4dbeec3aa8d
+- name: github.com/kataras/go-serializer
+  version: 959c7b8c27718d5a7a3d83ad05d677ae234e1152
+  subpackages:
+  - data
+  - json
+  - jsonp
+  - markdown
+  - text
+  - xml
+- name: github.com/kataras/go-sessions
+  version: 869154f9f1046ba798da02a88aa1c5dfa4117164
+- name: github.com/kataras/go-template
+  version: b99158ff1faa4a4857d17c3bb9bf2a1e7beab3be
+  subpackages:
+  - html
+- name: github.com/kataras/go-websocket
+  version: bfb19718e7dca519a9eb48e277c33f45a24b63b8
+- name: github.com/kataras/iris
+  version: def1643c691b56ee4828d781ba6a41fcce5035eb
+  subpackages:
+  - context
+  - utils
+- name: github.com/klauspost/compress
+  version: d0763f13d86e630f5d3ea9fa848a6ecc68255297
+  subpackages:
+  - flate
+  - gzip
+  - zlib
+- name: github.com/klauspost/cpuid
+  version: 09cded8978dc9e80714c4d85b0322337b0a1e5e0
+- name: github.com/klauspost/crc32
+  version: 19b0b332c9e4516a6370a0456e6182c3b5036720
+- name: github.com/microcosm-cc/bluemonday
+  version: 7d0cad0ac7ef5e3afd74816444b44b56327422a4
+- name: github.com/miekg/dns
+  version: db96a2b759cdef4f11a34506a42eb8d1290c598e
+- name: github.com/moul/http2curl
+  version: b1479103caacaa39319f75e7f57fc545287fca0d
+- name: github.com/plimble/envconfig
+  version: ca2b88252414b92b1f5eaba41c619b9cc8c4c2c8
+- name: github.com/plimble/errors
+  version: cdd78537482af7df73a9fdc8edd311478e2a3b05
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
+- name: github.com/russross/blackfriday
+  version: 35eb537633d9950afc8ae7bdf0edb6134584e9fc
+- name: github.com/sergi/go-diff
+  version: 97b2266dfe4bd4ea1b81a463322f04f8b724801e
+  subpackages:
+  - diffmatchpatch
+- name: github.com/shurcooL/sanitized_anchor_name
+  version: 1dba4b3954bc059efc3991ec364f9f9a35f597d2
+- name: github.com/Sirupsen/logrus
+  version: 3ec0642a7fb6488f65b06f9040adc67e3990296a
+- name: github.com/stretchr/testify
+  version: d77da356e56a7428ad25149ca77381849a6a5232
+  subpackages:
+  - assert
+  - require
+- name: github.com/tj/go-debug
+  version: ff4a55a20a86994118644bbddc6a216da193cc13
+- name: github.com/valyala/bytebufferpool
+  version: e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7
+- name: github.com/valyala/fasthttp
+  version: d03a22720925ae6fd6f81db717d9288fc2771d79
+  subpackages:
+  - fasthttpadaptor
+  - fasthttputil
+- name: github.com/xeipuuv/gojsonpointer
+  version: e0fe6f68307607d540ed8eac07a342c33fa1b54a
+- name: github.com/xeipuuv/gojsonreference
+  version: e02fc20de94c78484cd5ffb007f8af96be030a45
+- name: github.com/xeipuuv/gojsonschema
+  version: 00f9fafb54d2244d291b86ab63d12c38bd5c3886
+- name: github.com/xenolf/lego
+  version: 82ac43327b01319544c050d5d78a4edeff9565d2
+  subpackages:
+  - acme
+- name: github.com/yalp/jsonpath
+  version: 31a79c7593bb93eb10b163650d4a3e6ca190e4dc
+- name: github.com/yudai/golcs
+  version: d1c525dea8ce39ea9a783d33cf08932305373f2c
+- name: golang.org/x/crypto
+  version: 8e06e8ddd9629eb88639aba897641bff8031f1d3
+  subpackages:
+  - curve25519
+  - ed25519
+  - ed25519/internal/edwards25519
+  - ocsp
+  - ssh
+  - ssh/terminal
+- name: golang.org/x/net
+  version: 6d3beaea10370160dea67f5c9327ed791afd5389
+  subpackages:
+  - context
+  - html
+  - html/atom
+  - publicsuffix
+- name: golang.org/x/sys
+  version: 8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9
+  subpackages:
+  - unix
+  - windows
+  - windows/registry
+  - windows/svc
+  - windows/svc/eventlog
+  - windows/svc/mgr
+- name: golang.org/x/time
+  version: 2bc1b4fbcc7c3eda9a26f6e523cac1196c6fecd7
+  subpackages:
+  - rate
+- name: gopkg.in/square/go-jose.v1
+  version: aa2e30fdd1fe9dd3394119af66451ae790d50e0d
+  subpackages:
+  - cipher
+  - json
+testImports: []

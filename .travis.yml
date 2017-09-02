@@ -1,6 +1,6 @@
 language: go
 go:
-  - 1.4
+  - 1.9
 before_install:
   - sudo add-apt-repository ppa:rwky/graphicsmagick -y
   - sudo apt-get update -qq

@@ -1,7 +1,11 @@
 language: go
 go:
-  - 1.9
+  - tip
+os:
+  - linux
 before_install:
   - sudo add-apt-repository ppa:rwky/graphicsmagick -y
   - sudo apt-get update -qq
   - sudo apt-get install graphicsmagick -y
+install:
+  - go get ./...

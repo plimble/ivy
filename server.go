@@ -6,57 +6,55 @@ import (
 	"github.com/plimble/errors"
 )
 
-func NewServer(config *Config) (*iris.Framework, error) {
-	ir := iris.New(
-		iris.OptionDisableBanner(true),
-	)
+func NewServer(config *Config) (*iris.Application, error) {
+	app := iris.New()
 
 	source := NewS3(config.SourceAwsId, config.SourceAwsSecret, config.SourceAwsS3Bucket, config.SourceAwsS3Region)
 
 	p := NewProcessor(source)
 
-	ir.Get("/*path", handler(p))
+	app.Get("/{filepath:path}", handler(p))
 
-	return ir, nil
+	returnappir, nil
 }
 
-func handler(p Processor) iris.HandlerFunc {
-	return func(ctx *iris.Context) {
-		path := ctx.Param("path")
+func handler(p Processor) iris.Handler {
+	return func(ctx iris.Context) {
+		path := ctx.Params().Get("filepath")
 		if path == "" {
-			ctx.SetStatusCode(404)
+			ctx.StatusCode(iris.StatusNotFound)
 			return
 		}
 
 		opt := &bimg.Options{}
-		opt.Width, opt.Height = splitWidthHeightString(ctx.FormValueString("r"))
-		opt.Crop = getBoolFromString(ctx.FormValueString("c"))
+		opt.Width, opt.Height = splitWidthHeightString(ctx.FormValue("r"))
+		opt.Crop = getBoolFromString(ctx.FormValue("c"))
 
-		g := getGravityFromString(ctx.FormValueString("g"))
+		g := getGravityFromString(ctx.FormValue("g"))
 		if g > -1 {
 			opt.Gravity = g
 		}
 
-		f := getBoolFromString(ctx.FormValueString("f"))
+		f := getBoolFromString(ctx.FormValue("f"))
 		if f {
 			opt.Force = true
 		} else {
 			opt.Embed = true
 		}
 
-		opt.Quality = stringToInt(ctx.FormValueString("q"))
-		opt.Type = stringToImageType(ctx.FormValueString("t"))
+		opt.Quality = stringToInt(ctx.FormValue("q"))
+		opt.Type = stringToImageType(ctx.FormValue("t"))
 
 		img, imgType, err := p.Process(path, opt)
 		if err != nil {
 			status, err := errors.ErrorStatus(err)
-			ctx.Text(status, err.Error())
+			ctx.StatusCode(status)
+			ctx.Text(err.Error())
 			return
 		}
 
-		ctx.Response.Header.SetContentType(getContentType(imgType))
-		ctx.Response.Header.SetContentLength(len(img))
-		ctx.Response.AppendBody(img)
-		ctx.SetStatusCode(200)
+		ctx.ContentType(getContentType(imgType))
+		ctx.Header("Content-Length", len(img))
+		ctx.ResponseWriter().Write(img)
 	}
 }

@@ -65,13 +65,6 @@ imports:
   version: c2c54e542fb797ad986b31721e1baedf214ca413
 - name: github.com/kardianos/service
   version: 7a88211485df5d3da6ec68f4f8a5ff9bec297327
-  subpackages:
-  - data
-  - json
-  - jsonp
-  - markdown
-  - text
-  - xml
 - name: github.com/kataras/golog
 version: 2ed680e7b1f34147164fa8073373e14fce02ac30
 - name: github.com/kataras/pio

@@ -39,14 +39,6 @@ imports:
   - spew
 - name: github.com/fatih/structs
   version: dc3312cb1a4513a366c4c9e622ad55c32df12ed3
-- name: github.com/gavv/gojsondiff
-  version: 36046c6e558e7f854ebd3fd97d1e9812ebe8709b
-  subpackages:
-  - formatter
-- name: github.com/gavv/httpexpect
-  version: 445f10d0ea3df01f78f350cbb01dd4a360d56d93
-- name: github.com/gavv/monotime
-  version: 259cd7b345f5aa080eff16f21d7866ef7dea9528
 - name: github.com/go-ini/ini
   version: 6e4869b434bd001f6983749881c7ead3545887d8
 - name: github.com/google/go-github
@@ -67,26 +59,12 @@ imports:
   version: 50d4dbd4eb0e84778abe37cefef140271d96fade
 - name: github.com/imkira/go-interpol
   version: 5accad8134979a6ac504d456a6c7f1c53da237ca
-- name: github.com/iris-contrib/formBinder
-  version: 32009bbc76eda475a6d1eb24787d1fdcdaf80e71
-- name: github.com/iris-contrib/letsencrypt
-  version: 2a9ed749d24d8d2a8ece891b7b6242f0b3192d62
-- name: github.com/iris-contrib/websocket
-  version: 5822d5825abd388d92ecdf42024dc2ad1a5ce1ba
 - name: github.com/jmespath/go-jmespath
   version: bd40a432e4c76585ef6b72d3fd96fb9b6dc7b68d
 - name: github.com/kardianos/osext
   version: c2c54e542fb797ad986b31721e1baedf214ca413
 - name: github.com/kardianos/service
   version: 7a88211485df5d3da6ec68f4f8a5ff9bec297327
-- name: github.com/kataras/go-errors
-  version: 0f977b82cc78d5d31bb75fb6f903ad9e852c8bbd
-- name: github.com/kataras/go-fs
-  version: 4aa4a72b7801e6a9486568dfd21d812354d27899
-- name: github.com/kataras/go-options
-  version: 23b556c1b935c594ec6d71ff81ead4dbeec3aa8d
-- name: github.com/kataras/go-serializer
-  version: 959c7b8c27718d5a7a3d83ad05d677ae234e1152
   subpackages:
   - data
   - json
@@ -94,19 +72,25 @@ imports:
   - markdown
   - text
   - xml
-- name: github.com/kataras/go-sessions
-  version: 869154f9f1046ba798da02a88aa1c5dfa4117164
-- name: github.com/kataras/go-template
-  version: b99158ff1faa4a4857d17c3bb9bf2a1e7beab3be
-  subpackages:
-  - html
-- name: github.com/kataras/go-websocket
-  version: bfb19718e7dca519a9eb48e277c33f45a24b63b8
+- name: github.com/kataras/golog
+version: 2ed680e7b1f34147164fa8073373e14fce02ac30
+- name: github.com/kataras/pio
+version: 825e39f34365e7db2c9fbc3692c16220e3bd7418
+- name: github.com/iris-contrib/httpexpect
+version: 65e93247e7071782e760f82086e8b677cca0c78a
 - name: github.com/kataras/iris
-  version: def1643c691b56ee4828d781ba6a41fcce5035eb
+  version: 5e0fb95f46bab5382836fafce8a79cb322ed5a46
   subpackages:
+  - cache
   - context
-  - utils
+  - core
+  - httptest
+  - middleware
+  - mvc
+  - sessions
+  - typescript
+  - view
+  - websocket
 - name: github.com/klauspost/compress
   version: d0763f13d86e630f5d3ea9fa848a6ecc68255297
   subpackages:
@@ -186,7 +170,7 @@ imports:
   - html/atom
   - publicsuffix
 - name: golang.org/x/sys
-  version: 8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9
+  version: a07a691ac871746ae690ccf3ab217363b2144531
   subpackages:
   - unix
   - windows

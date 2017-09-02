@@ -19,5 +19,5 @@ func main() {
 
 	log.Infof("Iris %s Running at %s", iris.Version, config.Addr)
 
-	server.Listen(config.Addr)
+	server.Run(iris.Addr(config.Addr), iris.WithoutStartupLog)
 }
